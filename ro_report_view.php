@@ -238,47 +238,125 @@ foreach ($getroname as $key){ ?>
 
 </thead>
 <tbody>
-<?php $i=1; foreach ($sampleTransaction as $regkey): ?>
+<?php $i = 1; 
+$total_qua_nonreg = 0; 
+$total_eco_nonreg = 0;
+$total_qua_reg = 0;
+$total_eco_reg = 0;
+$total_total = 0;
+
+$total_qua_nonreg_4 = 0;
+$total_eco_nonreg_4 = 0;
+$total_qua_reg_4 = 0;
+$total_eco_reg_4 = 0;
+$total_total_4 = 0;
+
+foreach ($sampleTransaction as $regkey): 
+    if ($i == 1) {
+
+      $prevmonth = $_SESSION['month'] - 1;
+$prevdata = $db->getCurrentSampleTransaction($db, $db->con, $user_id, $prevmonth, $year);
+
+$prevquo = isset($prevdata[0]) 
+    ? (($prevdata[0]['qua_nonreg'] + ($prevdata[1]['qua_nonreg'] ?? 0)) - ($prevdata[3]['qua_nonreg'] ?? 0)) 
+    : 0;
+
+$preveco_nonreg = isset($prevdata[0]) 
+    ? (($prevdata[0]['eco_nonreg'] + ($prevdata[1]['eco_nonreg'] ?? 0)) - ($prevdata[3]['eco_nonreg'] ?? 0)) 
+    : 0;
+
+$prevqua_reg = isset($prevdata[0]) 
+    ? (($prevdata[0]['qua_reg'] + ($prevdata[1]['qua_reg'] ?? 0)) - ($prevdata[3]['qua_reg'] ?? 0)) 
+    : 0;
+
+$preveco_reg = isset($prevdata[0]) 
+    ? (($prevdata[0]['eco_reg'] + ($prevdata[1]['eco_reg'] ?? 0)) - ($prevdata[3]['eco_reg'] ?? 0)) 
+    : 0;
+
+$total = isset($prevdata[0]) 
+    ? (($prevdata[0]['total'] + ($prevdata[1]['total'] ?? 0)) - ($prevdata[3]['total'] ?? 0)) 
+    : 0;
+       
+    } elseif ($i == 2) {
+        $total_qua_nonreg += $regkey['qua_nonreg'];
+        $total_eco_nonreg += $regkey['eco_nonreg'];
+        $total_qua_reg += $regkey['qua_reg'];
+        $total_eco_reg += $regkey['eco_reg'];
+        $total_total +=  $regkey['qua_nonreg']+$regkey['eco_nonreg']+$regkey['qua_reg']+$regkey['eco_reg'];
+    } elseif ($i == 4) {
+        $total_qua_nonreg_4 += $regkey['qua_nonreg'];
+        $total_eco_nonreg_4 += $regkey['eco_nonreg'];
+        $total_qua_reg_4 += $regkey['qua_reg'];
+        $total_eco_reg_4 += $regkey['eco_reg'];
+        $total_total_4 += $regkey['qua_nonreg']+$regkey['eco_nonreg']+$regkey['qua_reg']+$regkey['eco_reg'];
+    } ?>
 <tr>
 <td><?=$i?></td>
 <td>
-<?php if($regkey['is_commercial']=='N'){?>
-<span style="font-size: 14px;" class="badge ">NC</span> 
+<?php if ($regkey['is_commercial'] == 'N') { ?>
+<span style="font-size: 14px;" class="badge">NC</span> 
 <?php } ?>
 <?=$regkey['sample_name']?>
 </td>
 <td>
-<?=$regkey['qua_nonreg']?>
+  <?php if ($i == 1) { ?>
+    <?=$prevquo.'.00'?> 
+<?php } elseif ($i == 3) { ?>
+    <?=$total_qua_nonreg.'.00'?> 
+<?php } elseif ($i == 5) { ?>
+    <?=$total_qua_nonreg - $total_qua_nonreg_4.'.00'?> 
+<?php } else { ?>
+    <?=$regkey['qua_nonreg']?>
+<?php } ?>
 </td>
 <td>
-<?=$regkey['eco_nonreg']?>
+ <?php if ($i == 1) { ?>
+    <?=$preveco_nonreg.'.00'?> 
+<?php } elseif ($i == 3) { ?>
+    <?=$total_eco_nonreg.'.00'?> 
+<?php } elseif ($i == 5) { ?>
+    <?=$total_eco_nonreg - $total_eco_nonreg_4.'.00'?>
+<?php } else { ?>
+    <?=$regkey['eco_nonreg']?>
+<?php } ?>
 </td>
 <td>
-<?=$regkey['qua_reg']?>
+ <?php if ($i == 1) { ?>
+    <?=$prevqua_reg.'.00'?> 
+<?php } elseif ($i == 3) { ?>
+    <?=$total_qua_reg.'.00'?>
+<?php } elseif ($i == 5) { ?>
+    <?=$total_qua_reg - $total_qua_reg_4.'.00'?> 
+<?php } else { ?>
+    <?=$regkey['qua_reg']?>
+<?php } ?>
 </td>
 <td>
-<?=$regkey['eco_reg']?>
+ <?php if ($i == 1) { ?>
+    <?=$preveco_reg.'.00'?> 
+<?php } elseif ($i == 3) { ?>
+    <?=$total_eco_reg.'.00'?> 
+<?php } elseif ($i == 5) { ?>
+    <?=$total_eco_reg - $total_eco_reg_4.'.00'?> 
+<?php } else { ?>
+    <?=$regkey['eco_reg']?>
+<?php } ?>
 </td>
-<td>
-<?=$regkey['total']?>
-</td> 
-
+ <td>
+ <?php if ($i == 1) { ?>
+    <?=$total.'.00'?> 
+<?php } elseif ($i == 3) { ?>
+    <?=$total_total.'.00'?>
+<?php } elseif ($i == 5) { ?>
+    <?=$total_total - $total_total_4.'.00'?> 
+<?php } else { ?>
+    <?= $regkey['qua_nonreg']+ $regkey['eco_nonreg']+ $regkey['qua_reg']+ $regkey['eco_reg'].'.00'  ?>
+<?php } ?>
+</td>
 </tr>
 
 <?php $i++; endforeach; ?>
-<tr style="font-weight:bold; font-size: 16px;">
-<td colspan="2" style="text-align: right">
-<span style="font-size: 14px;" >C (4): </span> <?=$commercialSampleCount?>, 
-<span style="font-size: 14px;" >NC(6+7+8+9): </span> <?=$noncommercialSampleCount?> 
-</td>
-<td  style="text-align: right">
-Total Sample Tested (4+6+7+8+9)
-</td>
-<td >
-<?=$sampleCount?>
-</td>
-<td colspan="3"></td>
-</tr>
+
 </tbody>
 
 </table>

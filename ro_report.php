@@ -57,12 +57,6 @@ $ro_id=$_POST['ro_id'];
 $_SESSION['ro_id']=$ro_id;
 }
 
-$check=$db->checkSubmitted($db, $db->con, $user_id, $month, $year);
-
-if($check == 1){
-header("location:ro_report_view.php"); exit();
-} 
-
 
 $sampleTransaction=$db->getCurrentSampleTransaction($db, $db->con, $user_id, $month, $year);
 $revenueTransaction=$db->getCurrentRevenueTransaction($db, $db->con, $user_id, $month, $year);
@@ -123,6 +117,173 @@ header("location:index.php");
 
 }
 
+
+if (isset($_POST['sample_transaction_edit'])) 
+{
+
+   // print_r($_POST);die();
+$val=0;
+$sample_transaction_id = $_POST['sample_transaction_id'];
+$qua_nonreg = $_POST['qua_nonreg'];
+$eco_nonreg = $_POST['eco_nonreg'];
+$qua_reg = $_POST['qua_reg'];
+$eco_reg = $_POST['eco_reg'];
+$total = ($qua_nonreg+$eco_nonreg+$qua_reg+$eco_reg);
+
+$row_num = $_POST['row_num']; 
+
+   
+    if ($row_num == 4) {
+
+      $month = $_SESSION['month'];
+      $year = $_SESSION['year'];
+
+      $sql = "SELECT * FROM `sample_transaction` WHERE month=:month and year=:year limit 2";
+
+      $getSample=$db->getAssoc($db->con, $sql, array('month'=>$month, 'year'=>$year));
+
+      $total_qua_nonreg_3 = 0;
+      $total_eco_nonreg_3 = 0;
+      $total_qua_reg_3 = 0;
+      $total_eco_reg_3 = 0;
+      $total_total_3 = 0;
+
+ foreach ($getSample as $row) {
+     
+        $total_qua_nonreg_3 += (float)$row['qua_nonreg'];
+        $total_eco_nonreg_3 += (float)$row['eco_nonreg'];
+        $total_qua_reg_3 += (float)$row['qua_reg'];
+        $total_eco_reg_3 += (float)$row['eco_reg'];
+        $total_total_3 += (float)$row['total'];
+    }
+    
+    $row_3_qua_nonreg = $total_qua_nonreg_3;
+    $row_3_eco_nonreg = $total_eco_nonreg_3;
+    $row_3_qua_reg = $total_qua_reg_3;
+    $row_3_eco_reg = $total_eco_reg_3;
+
+
+    $qua_nonreg = isset($_POST['qua_nonreg']) ? (float)$_POST['qua_nonreg'] : 0;
+    $eco_nonreg = isset($_POST['eco_nonreg']) ? (float)$_POST['eco_nonreg'] : 0;
+    $qua_reg = isset($_POST['qua_reg']) ? (float)$_POST['qua_reg'] : 0;
+    $eco_reg = isset($_POST['eco_reg']) ? (float)$_POST['eco_reg'] : 0;
+
+    if ($qua_nonreg > $row_3_qua_nonreg || $eco_nonreg > $row_3_eco_nonreg || 
+        $qua_reg > $row_3_qua_reg || $eco_reg > $row_3_eco_reg) {
+
+           echo ("<script language='JavaScript'>
+window.alert('Row 4 values cannot be greater than Row 3 values.');
+window.location.href='ro_report.php';
+</script>");
+           exit();
+           
+        }
+      }
+
+
+$sqlupdate="UPDATE `sample_transaction` SET `qua_nonreg`=:qua_nonreg, `eco_nonreg`=:eco_nonreg, `qua_reg`=:qua_reg, `eco_reg`=:eco_reg,`total`=:total WHERE`sample_transaction_id`=:sample_transaction_id";
+
+
+$addSample=$db->setData($db->con, $sqlupdate, array('qua_nonreg'=>$qua_nonreg, 'eco_nonreg'=>$eco_nonreg, 'qua_reg'=>$qua_reg, 'eco_reg'=>$eco_reg, 'total'=>$total,   'sample_transaction_id'=>$sample_transaction_id));
+
+if($addSample)
+{
+$done=1;
+}
+
+if($done==1)
+{
+
+$_SESSION['success']="Sample Data Updated";
+
+header("location:ro_report.php");exit;
+}
+else
+{
+
+$_SESSION['error']="Sample Data Not Updated";
+header("location:ro_report.php");exit;
+}
+
+
+}
+
+if (isset($_POST['training_transaction_edit'])) 
+{
+  
+$training_program_id = $_POST['training_program_id'];
+$organisation_name = $_POST['organisation_name'];
+$training_date = $_POST['training_date'];
+$participant_no = $_POST['participant_no'];
+$amount = $_POST['amount'];
+$gst_amount = $_POST['gst_amount'];
+
+
+$sqlupdate="UPDATE `training_program` SET `organisation_name`=:organisation_name, `training_date`=:training_date, `participant_no`=:participant_no, `amount`=:amount,`gst_amount`=:gst_amount  WHERE `training_program_id`=:training_program_id";
+
+
+$updateCertificate=$db->setData($db->con, $sqlupdate, array('organisation_name'=>$organisation_name, 'training_date'=>$training_date, 'participant_no'=>$participant_no, 'amount'=>$amount, 'gst_amount'=>$gst_amount,   'training_program_id'=>$training_program_id));
+
+if($updateCertificate)
+{
+$done=1;
+}
+
+if($done==1)
+{
+
+$_SESSION['success']="Training Data Updated";
+
+header("location:ro_report.php");exit;
+}
+else
+{
+
+$_SESSION['error']="Training Data Not Updated";
+header("location:ro_report.php");exit;
+}
+
+}
+
+if (isset($_POST['activity_transaction_edit'])) 
+{
+
+$activity_transaction_id = $_POST['activity_transaction_id'];
+$organisation_name = $_POST['organisation_name'];
+$name_of_units = $_POST['name_of_units'];
+$training_program = $_POST['training_program'];
+$date_of_commencement = $_POST['date_of_commencement'];
+$date_of_completion = $_POST['date_of_completion'];
+$remark = $_POST['remark'];
+$gst_amount = $_POST['gst_amount'];
+$amount =  $_POST['amount'];
+
+
+$sqlupdate="UPDATE `activity_transaction` SET `organisation_name`=:organisation_name, `training_program`=:training_program, `name_of_units`=:name_of_units,`date_of_commencement`=:date_of_commencement, `date_of_completion`=:date_of_completion, `remark`=:remark,`amount`=:amount, `gst_amount`=:gst_amount  WHERE `activity_transaction_id`=:activity_transaction_id";
+
+  $updateCertificate=$db->setData($db->con, $sqlupdate, array('organisation_name'=>$organisation_name, 'name_of_units'=>$name_of_units,'training_program'=>$training_program,'date_of_commencement'=>$date_of_commencement, 'date_of_completion'=>$date_of_completion, 'remark'=>$remark, 'amount'=>$amount, 'gst_amount'=>$gst_amount,  'activity_transaction_id'=>$activity_transaction_id));
+
+// echo "ghfhf";die();
+if($updateCertificate)
+{
+$done=1;
+}
+
+if($done==1)
+{
+
+$_SESSION['success']="Activity Data Updated";
+
+header("location:ro_report.php");exit;
+}
+else
+{
+
+$_SESSION['error']="Activity Data Not Updated";
+header("location:ro_report.php");exit;
+}
+
+}
 
 ?>
 
@@ -225,8 +386,8 @@ foreach ($getroname as $key){ ?>
 <th rowspan="2">Sr No</th>
 <th rowspan="2">Samples</th>
 <th colspan="2">Non-Regulatory</th>
-<th colspan="2"> Regulatory</th>
-<th rowspan="2">Total</th> 
+<th colspan="2">Regulatory</th>
+<th rowspan="2">Total</th>
 <th rowspan="2">Action</th> 
 
 </tr>
@@ -239,40 +400,137 @@ foreach ($getroname as $key){ ?>
 
 </thead>
 <tbody>
-<?php $i=1; foreach ($sampleTransaction as $regkey): ?>
+<?php 
+$i = 1; 
+$total_qua_nonreg = 0; 
+$total_eco_nonreg = 0;
+$total_qua_reg = 0;
+$total_eco_reg = 0;
+$total_total = 0;
+
+$total_qua_nonreg_4 = 0;
+$total_eco_nonreg_4 = 0;
+$total_qua_reg_4 = 0;
+$total_eco_reg_4 = 0;
+$total_total_4 = 0;
+
+foreach ($sampleTransaction as $regkey): 
+    if ($i == 1) {
+
+      $prevmonth = $_SESSION['month'] - 1;
+$prevdata = $db->getCurrentSampleTransaction($db, $db->con, $user_id, $prevmonth, $year);
+
+$prevquo = isset($prevdata[0]) 
+    ? (($prevdata[0]['qua_nonreg'] + ($prevdata[1]['qua_nonreg'] ?? 0)) - ($prevdata[3]['qua_nonreg'] ?? 0)) 
+    : 0;
+
+$preveco_nonreg = isset($prevdata[0]) 
+    ? (($prevdata[0]['eco_nonreg'] + ($prevdata[1]['eco_nonreg'] ?? 0)) - ($prevdata[3]['eco_nonreg'] ?? 0)) 
+    : 0;
+
+$prevqua_reg = isset($prevdata[0]) 
+    ? (($prevdata[0]['qua_reg'] + ($prevdata[1]['qua_reg'] ?? 0)) - ($prevdata[3]['qua_reg'] ?? 0)) 
+    : 0;
+
+$preveco_reg = isset($prevdata[0]) 
+    ? (($prevdata[0]['eco_reg'] + ($prevdata[1]['eco_reg'] ?? 0)) - ($prevdata[3]['eco_reg'] ?? 0)) 
+    : 0;
+
+$total = isset($prevdata[0]) 
+    ? (($prevdata[0]['total'] + ($prevdata[1]['total'] ?? 0)) - ($prevdata[3]['total'] ?? 0)) 
+    : 0;
+       
+    } elseif ($i == 2) {
+        $total_qua_nonreg += $regkey['qua_nonreg'];
+        $total_eco_nonreg += $regkey['eco_nonreg'];
+        $total_qua_reg += $regkey['qua_reg'];
+        $total_eco_reg += $regkey['eco_reg'];
+        $total_total +=  $regkey['qua_nonreg']+$regkey['eco_nonreg']+$regkey['qua_reg']+$regkey['eco_reg'];
+    } elseif ($i == 4) {
+        $total_qua_nonreg_4 += $regkey['qua_nonreg'];
+        $total_eco_nonreg_4 += $regkey['eco_nonreg'];
+        $total_qua_reg_4 += $regkey['qua_reg'];
+        $total_eco_reg_4 += $regkey['eco_reg'];
+        $total_total_4 += $regkey['qua_nonreg']+$regkey['eco_nonreg']+$regkey['qua_reg']+$regkey['eco_reg'];
+    } ?>
 <tr>
 <td><?=$i?></td>
 <td>
-<?php if($regkey['is_commercial']=='N'){?>
-<span style="font-size: 14px;" class="badge ">NC</span> 
+<?php if ($regkey['is_commercial'] == 'N') { ?>
+<span style="font-size: 14px;" class="badge">NC</span> 
 <?php } ?>
 <?=$regkey['sample_name']?>
 </td>
 <td>
-<?=$regkey['qua_nonreg']?>
+  <?php if ($i == 1) { ?>
+    <?=$prevquo.'.00'?> 
+<?php } elseif ($i == 3) { ?>
+    <?=$total_qua_nonreg.'.00'?> 
+<?php } elseif ($i == 5) { ?>
+    <?=$total_qua_nonreg - $total_qua_nonreg_4.'.00'?> 
+<?php } else { ?>
+    <?=$regkey['qua_nonreg']?>
+<?php } ?>
 </td>
 <td>
-<?=$regkey['eco_nonreg']?>
+ <?php if ($i == 1) { ?>
+    <?=$preveco_nonreg.'.00'?> 
+<?php } elseif ($i == 3) { ?>
+    <?=$total_eco_nonreg.'.00'?> 
+<?php } elseif ($i == 5) { ?>
+    <?=$total_eco_nonreg - $total_eco_nonreg_4.'.00'?>
+<?php } else { ?>
+    <?=$regkey['eco_nonreg']?>
+<?php } ?>
 </td>
 <td>
-<?=$regkey['qua_reg']?>
+ <?php if ($i == 1) { ?>
+    <?=$prevqua_reg.'.00'?> 
+<?php } elseif ($i == 3) { ?>
+    <?=$total_qua_reg.'.00'?>
+<?php } elseif ($i == 5) { ?>
+    <?=$total_qua_reg - $total_qua_reg_4.'.00'?> 
+<?php } else { ?>
+    <?=$regkey['qua_reg']?>
+<?php } ?>
 </td>
 <td>
-<?=$regkey['eco_reg']?>
+ <?php if ($i == 1) { ?>
+    <?=$preveco_reg.'.00'?> 
+<?php } elseif ($i == 3) { ?>
+    <?=$total_eco_reg.'.00'?> 
+<?php } elseif ($i == 5) { ?>
+    <?=$total_eco_reg - $total_eco_reg_4.'.00'?> 
+<?php } else { ?>
+    <?=$regkey['eco_reg']?>
+<?php } ?>
 </td>
+ <td>
+ <?php if ($i == 1) { ?>
+    <?=$total.'.00'?> 
+<?php } elseif ($i == 3) { ?>
+    <?=$total_total.'.00'?>
+<?php } elseif ($i == 5) { ?>
+    <?=$total_total - $total_total_4.'.00'?> 
+<?php } else { ?>
+    <?= $regkey['qua_nonreg']+ $regkey['eco_nonreg']+ $regkey['qua_reg']+ $regkey['eco_reg'].'.00'  ?>
+<?php } ?>
+</td>
+ 
 <td>
-<?=$regkey['total']?>
-</td> 
-  <td>
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sampleModel<?=$regkey['sample_transaction_id']?>">
-<i data-feather="edit"></i></button>
+    <?php if ($i==1 || $i == 3 || $i == 5) { ?>
+     
+    <?php } else { ?>
+        <span type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sampleModel<?=$i?>" style="padding: 5px!important;">
+        <i data-feather="edit"></i></span>
+    <?php } ?>
 </td>      
-
 </tr>
-
 <!-- Sample Modal -->
-<div class="modal fade" id="sampleModel<?=$regkey['sample_transaction_id']?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="sampleModel<?=$i?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-row="<?=$i?>">
   <div class="modal-dialog">
+
+    <form class="form-horizontal"  method="post">
 
     <!-- Modal content-->
     <div class="modal-content">
@@ -281,78 +539,66 @@ foreach ($getroname as $key){ ?>
       </div>
       <div class="modal-body">
 
-        <form class="form-horizontal">
-
-          <div class="form-group row">
+          <div class="form-group row py-1">
             <label class="control-label col-md-3"></label>
             <div class="col-md-8">
-              <input class="form-control" type="hidden"  name="sample_transaction_id" id="sample_transaction_id"  readonly>
+              <input class="form-control" type="hidden"  name="sample_transaction_id" value="<?=$regkey['sample_transaction_id']?>"  readonly>
+              <input type="hidden" name="row_num" value="<?=$i?>">
+
             </div>
           </div>
-          <div class="form-group row">
+          <div class="form-group row py-1">
             <label class="control-label col-md-3">Sample Name</label>
             <div class="col-md-8">
-              <input class="form-control" type="text" name="sample_name" id="sample_name" readonly>
+              <input class="form-control" type="text" name="sample_name" value="<?=$regkey['sample_name']?>" readonly>
             </div>
           </div>
 
-          <div class="form-group row">
+          <div class="form-group row py-1">
             <label class="control-label col-md-3">Non-Reg Quality</label>
             <div class="col-md-8">
-              <input class="form-control" type="number"  name="qua_nonreg" id="qua_nonreg" >
+              <input class="form-control" type="number"  name="qua_nonreg" value="<?=$regkey['qua_nonreg']?>">
             </div>
           </div>
-          <div class="form-group row">
+          <div class="form-group row py-1">
             <label class="control-label col-md-3">Non-Reg Eco</label>
             <div class="col-md-8">
-              <input class="form-control" type="number" name="eco_nonreg" id="eco_nonreg" >
+              <input class="form-control" type="number" name="eco_nonreg" value="<?=$regkey['eco_nonreg']?>" >
             </div>
           </div>
 
-          <div class="form-group row">
+          <div class="form-group row py-1">
             <label class="control-label col-md-3">Reg Quality</label>
             <div class="col-md-8">
-              <input class="form-control" type="number" name="qua_reg" id="qua_reg" >
+              <input class="form-control" type="number" name="qua_reg" value="<?=$regkey['qua_reg']?>">
             </div>
           </div>
 
-          <div class="form-group row">
+          <div class="form-group row py-1">
             <label class="control-label col-md-3">Reg Eco</label>
             <div class="col-md-8">
-              <input class="form-control" type="number" name="eco_reg" id="eco_reg" >
+              <input class="form-control" type="number" name="eco_reg" value="<?=$regkey['eco_reg']?>">
             </div>
           </div>
 
 
-        </form>
-        
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-        <button type="submit" onclick="updateSample()" class="btn btn-primary">Save changes</button>
+        <button type="submit" name="sample_transaction_edit" class="btn btn-primary">Save changes</button>
     </div>
      
     </div>
 
+        </form>
+        
+
   </div>
-</div> <!-- end of model div -->
+</div>
 
 
 
 <?php $i++; endforeach; ?>
-<tr style="font-weight:bold; font-size: 16px;">
-<td colspan="2" style="text-align: right">
-<span style="font-size: 14px;" >C (4): </span> <?=$commercialSampleCount?>, 
-<span style="font-size: 14px;" >NC(6+7+8+9): </span> <?=$noncommercialSampleCount?> 
-</td>
-<td  style="text-align: right">
-Total Sample Tested (4+6+7+8+9)
-</td>
-<td >
-<?=$sampleCount?>
-</td>
-<td colspan="3"></td>
-</tr>
 </tbody>
 
 </table>
@@ -406,6 +652,7 @@ Total Sample Tested (4+6+7+8+9)
 <td style="text-align: right;">
 <?=$regkey['rev_total']?>
 </td> 
+<td></td>
 
 </tr>
 
@@ -422,7 +669,7 @@ Total (7+11+12+13+14)
 <td >
 <?=($revenueCount+$revenueNotionalCount)?>
 </td>
-<td colspan="2"></td>
+<td colspan="3"></td>
 </tr> 
 
 </tbody>
@@ -445,6 +692,7 @@ Total (7+11+12+13+14)
 <th>No Of Participants</th>
 <th>Amount(Rs.) </th>
 <th>GST Amount (Rs.)</th>
+<th>Action</th>
 
 </tr>
 </thead>
@@ -457,8 +705,83 @@ Total (7+11+12+13+14)
 <td><?= $regkey['participant_no'] ?></td>
 <td style="text-align: right;"><?= $regkey['amount'] ?></td>
 <td style="text-align: right;"><?= $regkey['gst_amount'] ?></td>
-
+<td>
+  <span type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#trainingTransactionModel<?=$i?>" style="padding: 5px!important;">
+        <i data-feather="edit"></i></span>
+</td>
 </tr>
+
+<!-- Training Modal -->
+<div class="modal fade" id="trainingTransactionModel<?=$i?>" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+
+
+        <form class="form-horizontal" method="post">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" >Update Record</h4>
+      </div>
+      <div class="modal-body">
+
+          <div class="form-group row">
+            <label class="control-label col-md-3"></label>
+            <div class="col-md-8">
+              <input class="form-control" type="hidden"  name="training_program_id" value="<?php echo $regkey['training_program_id'] ?>" readonly>
+            </div>
+          </div>
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Organisation Name</label>
+            <div class="col-md-8">
+              <input class="form-control" type="text" name="organisation_name" value="<?php echo $regkey['organisation_name'] ?>" readonly>
+            </div>
+          </div>
+
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Date</label>
+            <div class="col-md-8">
+              <input class="form-control" type="Date"  name="training_date"  max="<?php echo date("Y-m-t", strtotime(date("Y-m-t"))); ?>" value="<?php echo $regkey['training_date'] ?>">
+            </div>
+          </div>
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">No Of Participants</label>
+            <div class="col-md-8">
+              <input class="form-control" type="number" name="participant_no" value="<?php echo $regkey['participant_no'] ?>" >
+            </div>
+          </div>
+
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Amount(Rs.) </label>
+            <div class="col-md-8">
+              <input class="form-control" type="number" name="amount" value="<?php echo $regkey['amount'] ?>" id="amount">
+            </div>
+          </div>
+
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">GST Amount (Rs.)</label>
+            <div class="col-md-8">
+           
+              <input class="form-control" type="number" name="gst_amount" value="<?php echo $regkey['gst_amount'] ?>" id="gst_amount" readonly style="background-color: #f8f9fa;">
+            </div>
+          </div>
+
+
+      
+      </div>
+       <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+        <button type="submit" name="training_transaction_edit" class="btn btn-primary">Save changes</button>
+    </div>
+    </div>
+
+      </form>
+        
+
+  </div>
+</div> <!-- end of model div -->
+
 <?php $i++; endforeach; ?>
 <tr style="font-weight:bold; font-size: 16px;">
 <td colspan="3" style="text-align: right">
@@ -470,6 +793,8 @@ Total
 <td>
 <?=$trainingCount[0]['amount']?>
 </td>
+<td></td>
+
 <td></td>
 </tr>
 </tbody>
@@ -496,6 +821,7 @@ In-house Laboratories Of The Industry</h6>
 <th>Training program</th>
 <th>Amount Received (Rs.)</th>
 <th>GST Amount (Rs.)</th>
+<th>Action</th>
 </tr>
 </thead>
 <tbody>
@@ -521,8 +847,112 @@ echo "";
 <td><?= $regkey['training_program'] ?></td>
 <td style="text-align: right;"><?= $regkey['amount'] ?></td>
 <td style="text-align: right;"><?= $regkey['gst_amount'] ?></td>
+<td>
+  <span type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#activityTransactionModel<?=$i?>" style="padding: 5px!important;">
+        <i data-feather="edit"></i></span>
+</td>
 
 </tr>
+
+<!-- Activity Modal -->
+
+
+<div class="modal fade" id="activityTransactionModel<?=$i?>" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+     <form class="form-horizontal" method="post">
+
+    <div class="modal-content">
+      <div class="modal-header" >
+        <h4 class="modal-title" >Update Record</h4>
+      </div>
+      <div class="modal-body">
+
+       
+          <div class="form-group row">
+            <label class="control-label col-md-3"></label>
+            <div class="col-md-8">
+              <input class="form-control" type="hidden" name="activity_transaction_id" value="<?= $regkey['activity_transaction_id'] ?>"  readonly>
+            </div>
+          </div>
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Activity Name</label>
+            <div class="col-md-8">
+              <input class="form-control" type="text" name="activity_name" value="<?= $getActivity[0]['activity_name'] ?>" readonly>
+            </div>
+          </div>
+
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Organisation Name</label>
+            <div class="col-md-8">
+              <input class="form-control" type="text" name="organisation_name" value="<?= $regkey['organisation_name'] ?>" >
+            </div>
+          </div>
+
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Name of units for which consultancy is organised</label>
+            <div class="col-md-8">
+              <input class="form-control" type="text"  name="name_of_units" value="<?= $regkey['name_of_units'] ?>" >
+            </div>
+          </div>
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Date of commencement of consultancy</label>
+            <div class="col-md-8">
+              <input class="form-control" type="date" name="date_of_commencement" value="<?= $regkey['date_of_commencement'] ?>" max="<?php echo date("Y-m-t", strtotime(date("Y-m-t"))); ?>" >
+            </div>
+          </div>
+
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Expected date of completion of consultancy</label>
+            <div class="col-md-8">
+              <input class="form-control" type="date" name="date_of_completion" value="<?= $regkey['date_of_completion'] ?>" max="<?php echo date("Y-m-t", strtotime(date("Y-m-t"))); ?>">
+            </div>
+          </div>
+
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Activity Carried out in this month </label>
+            <div class="col-md-8">
+              <input class="form-control" type="text" name="remark" value="<?= $regkey['remark'] ?>" >
+            </div>
+          </div>
+
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Training Program </label>
+            <div class="col-md-8">
+              <input class="form-control" type="text" name="training_program" value="<?= $regkey['training_program'] ?>">
+            </div>
+          </div>
+
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">Amount(Rs.) </label>
+            <div class="col-md-8">
+              <input class="form-control" type="text" name="amount" id="amount" value="<?= $regkey['amount'] ?>">
+            </div>
+          </div>
+
+          <div class="form-group row py-1">
+            <label class="control-label col-md-3">GST Amount (Rs.)</label>
+            <div class="col-md-8">
+          
+              <input class="form-control" type="text" name="gst_amount" id="gst_amount" value="<?= $regkey['gst_amount'] ?>">
+            </div>
+          </div>
+
+
+       
+      </div>
+      <div class="modal-footer">
+       <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+        <button type="submit" name="activity_transaction_edit" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+     </form>
+        
+
+  </div>
+</div> <!-- end of model div -->
+
 <?php $i++; endforeach; ?>
 
 <tr style="font-weight:bold; font-size: 16px;">
@@ -535,6 +965,7 @@ Total
 <td>
 <?=$activityCount[0]['gst_amount']?>
 </td>
+<td></td>
 </tr>
 
 </tbody>
@@ -559,6 +990,7 @@ Total
 <th>Place</th>
 <th>Participants</th>
 <th>Remark</th>
+<th>Action</th>
 </tr>
 </thead>
 <tbody>
@@ -572,8 +1004,88 @@ Total
 <td><?= $regkey['place'] ?></td>
 <td><?= $regkey['participant'] ?></td>
 <td><?= $regkey['remark'] ?></td>
+<td>
+  <span type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#meetTransactionModel<?=$i?>" style="padding: 5px!important;">
+        <i data-feather="edit"></i></span>
+</td>
 
 </tr>
+
+<!-- Meet Modal -->
+<div class="modal fade" id="meetTransactionModel<?=$i?>" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header" >
+        <h4 class="modal-title" >Update Record</h4>
+      </div>
+      <div class="modal-body">
+
+        <form class="form-horizontal">
+
+          <div class="form-group row">
+            <label class="control-label col-md-3"></label>
+            <div class="col-md-8">
+              <input class="form-control" type="hidden"  name="meet_transaction_id" value="<?= $regkey['meet_transaction_id'] ?>"  readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="control-label col-md-3">Meet</label>
+            <div class="col-md-8">
+              <input class="form-control" type="text" name="meet_name" value="<?= $regkey['meet_name'] ?>" readonly>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="control-label col-md-3">Description</label>
+            <div class="col-md-8">
+              <input class="form-control" type="text"  name="description" value="<?= $regkey['description'] ?>" >
+
+            </div>
+          </div>
+
+
+          <div class="form-group row">
+            <label class="control-label col-md-3">Date</label>
+            <div class="col-md-8">
+              <input class="form-control" type="date"  name="meet_date" value="<?= $regkey['meet_date'] ?>" max="<?php echo date("Y-m-t", strtotime(date("Y-m-t"))); ?>">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="control-label col-md-3">Place</label>
+            <div class="col-md-8">
+              <input class="form-control" type="text" name="place" value="<?= $regkey['place'] ?>" >
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="control-label col-md-3">Participants</label>
+            <div class="col-md-8">
+              <input class="form-control" type="text" name="participant" value="<?= $regkey['participant'] ?>" >
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="control-label col-md-3">Remark </label>
+            <div class="col-md-8">
+              <input class="form-control" type="text" name="meet_remark" value="<?= $regkey['meet_remark'] ?>" >
+            </div>
+          </div>               
+
+
+        </form>
+        
+      </div>
+      <div class="modal-footer">
+       <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+        <button type="submit" name="meet_transaction_edit" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+
+  </div>
+</div> <!-- end of model div -->
+
 <?php $i++; endforeach; ?>
 
 <tr style="font-weight:bold; font-size: 16px;">
@@ -583,6 +1095,7 @@ Total
 <td>
 <?=($meetCount[0]['participant'])?>
 </td>
+<td></td>
 <td></td>
 
 </tr>
@@ -1228,15 +1741,16 @@ if ($manpowerAvailablity) { ?>
 </div>
 </div>
 
+   <script type="text/javascript">
+document.getElementById("amount").addEventListener("blur", function() {
+var amount = parseFloat(this.value);
 
-
-
-
-
-<?php
-
-require('model.php');
-?>
-<script src="assets/js/functions/ro_report_model.js"></script>
-
+if (!isNaN(amount)) { 
+var gst = (18 / 100 * amount).toFixed(2);
+document.getElementById("gst_amount").value = gst;
+} else {
+document.getElementById("gst_amount").value = '';
+}
+});
+</script>
 <?php require('footer.php'); ?>

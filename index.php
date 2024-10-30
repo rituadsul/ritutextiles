@@ -397,4 +397,4 @@
 		</div> <!-- container-fluid -->
 	</div> <!-- content -->
 
-	<?php  require('footer.php'); ?>
+	<?php  require('footer1.php'); ?>

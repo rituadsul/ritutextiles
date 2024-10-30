@@ -28,7 +28,7 @@
 <script src="assets/js/theme/feather.min.js"></script>
 
 <!-- Apexcharts JS -->
-  <!-- <script src="assets/js/theme/apexcharts.min.js"></script>   -->
+   <script src="assets/js/theme/apexcharts.min.js"></script>
 
 <!-- for basic area chart -->
 <script src="assets/js/theme/stock-prices.js"></script>
@@ -42,7 +42,7 @@
 <!-- App js-->
 <script src="assets/js/theme/app.js"></script>
 
-  <script type="text/javascript">
+<!--  <script type="text/javascript">
 	window.onload = function() {
     const cardBox = document.getElementById('card-box');
 
@@ -54,7 +54,7 @@
     }, 4000); 
 };
 
-</script> 
+</script>  -->
 
 </body>
 </html>

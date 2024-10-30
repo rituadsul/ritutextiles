@@ -3,6 +3,12 @@
 $getMonth=$db->getAllMonth($db, $db->con);
 $getRevenueList=$db->getAssoc($db->con, "SELECT `revenue_label_id`, `revenue_label_name`, `is_active`, is_commercial, `publish_date`, `modify_date`, `user_id` FROM `revenue_label`  WHERE `is_active`=:is_active", array('is_active'=>'Y'));
 
+
+if (isset($_POST['btnSaveSample1'])) 
+{
+header("location:add_training.php");exit;
+}    
+
 if (isset($_POST['btnSaveSample'])) 
 {
 
@@ -245,7 +251,7 @@ endforeach;
 <i class="fa fa-fw fa-lg fa-check-circle"></i> Save & Next
 </button>    
 <?php } else {?>  
-<button class="btn btn-primary" name="btnSaveSample" type="submit" style="float: right;">
+<button class="btn btn-primary" name="btnSaveSample1" type="submit" style="float: right;">
 <i class="fa fa-fw fa-lg fa-check-circle"></i>Next
 </button><?php } ?>  
 

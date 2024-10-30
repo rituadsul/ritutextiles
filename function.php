@@ -36,7 +36,7 @@ class DB
 			try {
 				return $stmt->execute($bind);
 			} catch (Exception $e) {
-        echo "Error: " . $e->getMessage(); // Display the error
+        echo "Error: " . $e->getMessage();
         return false;
     }
 }

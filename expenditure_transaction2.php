@@ -3,7 +3,6 @@ $getExplAbel=$db->expenditureLabel($db, $db->con);
 
 if (isset($_POST['btnSaveSample1'])) 
 {
-$_SESSION['success']="Expenditure Data Added";    
 header("location:stock_position_transaction.php");exit;
 }
 
