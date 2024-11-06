@@ -388,11 +388,11 @@ public function getAssoc($con,$query,$bind)
 
 				}
 
-				public function equipment_transaction_List($db, $con, $user_id)
+				public function equipment_transaction_List($db, $con, $user_id,$month,$year)
 				{
-					$str="SELECT `equipment_transaction_id`, `equipment_name`, `parameter_name`, `user_id`, `publish_date`, `modify_date` FROM `equipment_transaction` WHERE user_id=:user_id";
+					$str="SELECT `equipment_transaction_id`, `equipment_name`, `parameter_name`, `user_id`, `publish_date`, `modify_date` FROM `equipment_transaction` WHERE user_id=:user_id AND month=:month AND year=:year";
 
-					$getEquipementList=$db->getAssoc($con, $str, array('user_id'=>$user_id));
+					$getEquipementList=$db->getAssoc($con, $str, array('user_id'=>$user_id,'month'=>$month, 'year'=>$year));
 
 					if($getEquipementList){
 						return $getEquipementList;
@@ -2003,10 +2003,9 @@ public function getAssoc($con,$query,$bind)
 
 		public function getCurrentEquipment($db, $con, $user_id, $month, $year)
 		{
-			$str="SELECT SUM(et.test_performed)as total 
-			FROM equipment_transaction as et 
-			LEFT JOIN equipment as e ON et.equipment_transaction_id=e.equipment_id 
-			WHERE  et.user_id=:user_id AND et.month=:month AND et.year=:year AND e.equipment_id IS NOT NULL ";
+			$str="SELECT SUM(test_performed) as total
+			FROM equipment_transaction 
+			WHERE  user_id=:user_id AND month=:month AND year=:year ";
 
 			if($user_id=='1'){
 
@@ -2020,6 +2019,8 @@ public function getAssoc($con,$query,$bind)
 
 				$getCount=$db->getAssoc($con, $str, array('user_id'=>$user_id, 'month'=>$month, 'year'=>$year));
 			}
+
+			// print_r($getCount);die();
 
 			if($getCount){
 				return $getCount[0]['total'];

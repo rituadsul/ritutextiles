@@ -20,9 +20,7 @@ if (isset($_POST['btnAddCustomer']))
         VALUES (:tatkal_customer_name,  :tatkal_sample_reported,   :tatkal_testing_charges, :tatkal_remark,  :month, :year, :user_id, :publish_date,  :enter_date )";
     $valarray= array(
                       'tatkal_customer_name'=>$tatkal_customer_name,
-                      
-                      'tatkal_sample_reported'=>$tatkal_sample_reported,                  
-                                     
+                      'tatkal_sample_reported'=>$tatkal_sample_reported,                             
                       'tatkal_testing_charges'=>$tatkal_testing_charges,                  
                       'tatkal_remark'=>$tatkal_remark,                 
                       'month'=>$month,

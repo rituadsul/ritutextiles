@@ -185,7 +185,7 @@ unset($_SESSION['error']);
 <div class="form-group row py-1">
 <label class="control-label col-md-3">GST(18%)</label>
 <div class="col-md-8">
-<input class="form-control" type="number" id="gst_amount"  name="gst_amount" placeholder="GST Amount" disabled required>
+<input class="form-control" type="number" id="gst_amount"  name="gst_amount" placeholder="GST Amount" readonly required style="background-color: #f8f9fa;">
 </div>
 </div>
 

@@ -254,7 +254,7 @@ unset($_SESSION['error']);
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Total<span style="color:red">*</span></label>
 <div class="col-md-8">
-<input class="form-control" type="text"  name="total" id="total" placeholder="Automatic calculate" disabled>
+<input class="form-control" type="text"  name="total" id="total" placeholder="Automatic calculate" readonly style="background-color:#f8f9fa">
 </div>
 </div>                
 
@@ -318,7 +318,7 @@ unset($_SESSION['error']);
     <td>1</td>
     <td>Number of Technical QAO/JQAO/Fellow</td>
     <td>
-        <input type="number" step="0.01" pattern="[0-9]" min="0" class="form-control" name="technical_manpower" id="technical_manpower" value="<?=$db->getCurrentCount($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year'])?>" disabled>
+        <input type="number" step="0.01" pattern="[0-9]" min="0" class="form-control" name="technical_manpower" id="technical_manpower" value="<?=$db->getCurrentCount($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year'])?>" readonly style="background-color: #f8f9fa;">
     </td>
 </tr>
 <tr>
