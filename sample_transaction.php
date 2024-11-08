@@ -17,37 +17,63 @@ $enter_date=$_SESSION['enter_date'];
 $publish_date=date("Y-m-d H:i:s");
 $done="";
 
-foreach ($getSampleList as $key) 
-{
+foreach ($getSampleList as $key) {
 
-  // print_r($key['sample_id']);die();
+     // print_r($_POST);die();
 
-$sqlstr="INSERT INTO `sample_transaction`( `sample_id`, `qua_nonreg`, `eco_nonreg`, `qua_reg`, `eco_reg`, `total`, `month`, `year`, `publish_date`, enter_date,  `user_id`) 
-VALUES (:sample_id, :qua_nonreg, :eco_nonreg, :qua_reg, :eco_reg, :total, :month, :year, :publish_date, :enter_date, :user_id)";
+    if ($key['sample_id'] != 5) {
+        $sqlstr = "INSERT INTO `sample_transaction`( `sample_id`, `qua_nonreg`, `eco_nonreg`, `qua_reg`, `eco_reg`, `total`, `month`, `year`, `publish_date`, `enter_date`, `user_id`) 
+        VALUES (:sample_id, :qua_nonreg, :eco_nonreg, :qua_reg, :eco_reg, :total, :month, :year, :publish_date, :enter_date, :user_id)";
 
-$valarray=array(
-'sample_id'=>$key['sample_id'],
-'qua_nonreg'=>trim($_POST['qua_nonreg'.$key['sample_id']]),
-'eco_nonreg'=>trim($_POST['eco_nonreg'.$key['sample_id']]), 
-'qua_reg'=>trim($_POST['qua_reg'.$key['sample_id']]),
-'eco_reg'=>trim($_POST['eco_reg'.$key['sample_id']]),
-'total'=>trim($_POST['total'.$key['sample_id']]),       
-'month'=>$month, 
-'year'=>$year, 
-'publish_date'=>$publish_date,
-'enter_date'=>$enter_date,
-'user_id'=>$user_id,
+        $valarray = array(
+            'sample_id' => $key['sample_id'],
+            'qua_nonreg' => trim($_POST['qua_nonreg' . $key['sample_id']]),
+            'eco_nonreg' => trim($_POST['eco_nonreg' . $key['sample_id']]),
+            'qua_reg' => trim($_POST['qua_reg' . $key['sample_id']]),
+            'eco_reg' => trim($_POST['eco_reg' . $key['sample_id']]),
+            'total' => trim($_POST['total' . $key['sample_id']]),
+            'month' => $month,
+            'year' => $year,
+            'publish_date' => $publish_date,
+            'enter_date' => $enter_date,
+            'user_id' => $user_id,
+        );
 
-);
+        $addSample = $db->setData($db->con, $sqlstr, $valarray);
 
-$addSample=$db->setData($db->con, $sqlstr, $valarray);
+        if ($addSample) {
+            $done = 1;
+        }
+    }
+  
+    if ($key['sample_id'] == 5) {
 
-if($addSample)
-{
-$done=1;
+        // echo $month;die();
+        $sqlstr = "INSERT INTO `sample_transaction_final`( `sample_id`, `qua_nonreg`, `eco_nonreg`, `qua_reg`, `eco_reg`, `total`, `month`, `year`, `publish_date`, `enter_date`, `user_id`) 
+        VALUES (:sample_id, :qua_nonreg, :eco_nonreg, :qua_reg, :eco_reg, :total, :month, :year, :publish_date, :enter_date, :user_id)";
+
+        $valarray = array(
+            'sample_id' => $key['sample_id'],
+            'qua_nonreg' => trim($_POST['qua_nonreg' . $key['sample_id']]),
+            'eco_nonreg' => trim($_POST['eco_nonreg' . $key['sample_id']]),
+            'qua_reg' => trim($_POST['qua_reg' . $key['sample_id']]),
+            'eco_reg' => trim($_POST['eco_reg' . $key['sample_id']]),
+            'total' => trim($_POST['total' . $key['sample_id']]),
+            'month' => $month,
+            'year' => $year,
+            'publish_date' => $publish_date,
+            'enter_date' => $enter_date,
+            'user_id' => $user_id,
+        );
+
+        $addSample = $db->setData($db->con, $sqlstr, $valarray);
+
+        if ($addSample) {
+            $done = 1;
+        }
+    }
 }
 
-}
 
 if($done==1)
 {
@@ -116,7 +142,8 @@ $sampleTransaction=$db->getCurrentSampleTransaction($db, $db->con, $user_id, $_S
 
 <label>Reporting month Date</label>
 <div class="col-md-3" style="display:inline-block;">
-<input class="form-control" type="date" max="<?php echo date("Y-m-t",strtotime(date("Y-m-t"))); ?>"  name="enter_date" id="enter_date" placeholder="Date" required value="<?php echo $enter_date; ?>"/>
+    <!-- max="<?php //echo date("Y-m-t",strtotime(date("Y-m-t"))); ?>" -->
+<input class="form-control" type="date"  name="enter_date" id="enter_date" placeholder="Date" required value="<?php echo $enter_date; ?>"/>
 </div>
 
 <button class="btn btn-primary" name="btntest" type="submit" ><i class="fa fa-fw fa-lg fa-check-circle"></i>Submit</button>                 
@@ -176,172 +203,141 @@ unset($_SESSION['error']);
 <tbody>
 <?php
 if (!$sampleTransaction) {
-$i = 1;
-$prevmonth = $_SESSION['month'] - 1;
-$prevdata = $db->getCurrentSampleTransaction($db, $db->con, $user_id, $prevmonth, $year);
 
-$prevquo = isset($prevdata[0]) 
-    ? (($prevdata[0]['qua_nonreg'] + ($prevdata[1]['qua_nonreg'] ?? 0)) - ($prevdata[3]['qua_nonreg'] ?? 0)) 
-    : 0;
+     $i = 1; 
 
-$preveco_nonreg = isset($prevdata[0]) 
-    ? (($prevdata[0]['eco_nonreg'] + ($prevdata[1]['eco_nonreg'] ?? 0)) - ($prevdata[3]['eco_nonreg'] ?? 0)) 
-    : 0;
+     if($_SESSION['month']=='01'|| $_SESSION['month']=='1'){
+        $prevmonth = '12';
+        $year = $_SESSION['year'] - 1;
+     }else{
+    $prevmonth = $_SESSION['month'] - 1;
+}
+    $finalprev = $db->getCurrentSampleTransactionfinal1($db, $db->con, $user_id, $prevmonth, $year);
 
-$prevqua_reg = isset($prevdata[0]) 
-    ? (($prevdata[0]['qua_reg'] + ($prevdata[1]['qua_reg'] ?? 0)) - ($prevdata[3]['qua_reg'] ?? 0)) 
-    : 0;
+foreach ($getSampleList as $index => $regkey):
 
-$preveco_reg = isset($prevdata[0]) 
-    ? (($prevdata[0]['eco_reg'] + ($prevdata[1]['eco_reg'] ?? 0)) - ($prevdata[3]['eco_reg'] ?? 0)) 
-    : 0;
+    $qua_nonreg_final = isset($finalprev[0]['qua_nonreg']) ? $finalprev[0]['qua_nonreg'] : 0;
+        $eco_nonreg_final = isset($finalprev[0]['eco_nonreg']) ? $finalprev[0]['eco_nonreg'] : 0;
+        $qua_reg_final = isset($finalprev[0]['qua_reg']) ? $finalprev[0]['qua_reg'] : 0;
+        $eco_reg_final = isset($finalprev[0]['eco_reg']) ? $finalprev[0]['eco_reg'] : 0;
+        $total_final = isset($finalprev[0]['total']) ? $finalprev[0]['total'] : 0;
 
-$total = isset($prevdata[0]) 
-    ? (($prevdata[0]['total'] + ($prevdata[1]['total'] ?? 0)) - ($prevdata[3]['total'] ?? 0)) 
-    : 0;
-    
-foreach ($getSampleList as $index => $regkey): ?>
+ ?>
 <tr>
 <td><?= $i ?></td>
 <td>
 <?= htmlspecialchars($regkey['sample_name']) ?>
 </td>
 <td>
-<input type="number" class="form-control" name="qua_nonreg<?= $regkey['sample_id'] ?>" id="qua_nonreg<?= $regkey['sample_id'] ?>" required value="<?= $index === 0 ? $prevquo : ''; ?>">
+<input type="number" class="form-control" name="qua_nonreg<?= $regkey['sample_id'] ?>" id="qua_nonreg<?= $regkey['sample_id'] ?>" required value="<?= $index === 0 ? $qua_nonreg_final : ''; ?>">
 </td>
 <td>
-<input type="number" class="form-control" name="eco_nonreg<?= $regkey['sample_id'] ?>" id="eco_nonreg<?= $regkey['sample_id'] ?>" required value="<?= $index === 0 ? $preveco_nonreg : ''; ?>">
+<input type="number" class="form-control" name="eco_nonreg<?= $regkey['sample_id'] ?>" id="eco_nonreg<?= $regkey['sample_id'] ?>" required value="<?= $index === 0 ? $eco_nonreg_final : ''; ?>">
 </td>
 <td>
-<input type="number" class="form-control" name="qua_reg<?= $regkey['sample_id'] ?>" id="qua_reg<?= $regkey['sample_id'] ?>" required value="<?= $index === 0 ? $prevqua_reg : ''; ?>">
+<input type="number" class="form-control" name="qua_reg<?= $regkey['sample_id'] ?>" id="qua_reg<?= $regkey['sample_id'] ?>" required value="<?= $index === 0 ? $qua_reg_final : ''; ?>">
 </td>
 <td>
-<input type="number" class="form-control" name="eco_reg<?= $regkey['sample_id'] ?>" id="eco_reg<?= $regkey['sample_id'] ?>" required value="<?= $index === 0 ? $preveco_reg : ''; ?>">
+<input type="number" class="form-control" name="eco_reg<?= $regkey['sample_id'] ?>" id="eco_reg<?= $regkey['sample_id'] ?>" required value="<?= $index === 0 ? $eco_reg_final : ''; ?>">
 </td>
 <td>
-<input type="number" class="form-control" name="total<?= $regkey['sample_id'] ?>" id="total<?= $regkey['sample_id'] ?>" disabled required value="<?= $index === 0 ? $total : ''; ?>">
+<input type="number" class="form-control" name="total<?= $regkey['sample_id'] ?>" id="total<?= $regkey['sample_id'] ?>" readonly required value="<?= $index === 0 ? $total_final : ''; ?>" style="background-color: #f8f9fa;">
 </td>
 </tr>
 <?php $i++;
 endforeach;
 } else {
-$i = 1; 
-$total_qua_nonreg = 0; 
-$total_eco_nonreg = 0;
-$total_qua_reg = 0;
-$total_eco_reg = 0;
-$total_total = 0;
+    $i = 1; 
 
-$total_qua_nonreg_4 = 0;
-$total_eco_nonreg_4 = 0;
-$total_qua_reg_4 = 0;
-$total_eco_reg_4 = 0;
-$total_total_4 = 0;
+    if($_SESSION['month']=='01'|| $_SESSION['month']=='1'){
+        $prevmonth = '12';
+        $year = $_SESSION['year'] - 1;
+     }else{
+    $prevmonth = $_SESSION['month'] - 1;
+}
+    $finalprev = $db->getCurrentSampleTransactionfinal1($db, $db->con, $user_id, $prevmonth, $year);
 
-foreach ($sampleTransaction as $regkey): 
-    if ($i == 1) {
+    foreach ($sampleTransaction as $regkey): 
 
-      $prevmonth = $_SESSION['month'] - 1;
-$prevdata = $db->getCurrentSampleTransaction($db, $db->con, $user_id, $prevmonth, $year);
+        $qua_nonreg_final = isset($finalprev[0]['qua_nonreg']) ? $finalprev[0]['qua_nonreg'] : 0;
+        $eco_nonreg_final = isset($finalprev[0]['eco_nonreg']) ? $finalprev[0]['eco_nonreg'] : 0;
+        $qua_reg_final = isset($finalprev[0]['qua_reg']) ? $finalprev[0]['qua_reg'] : 0;
+        $eco_reg_final = isset($finalprev[0]['eco_reg']) ? $finalprev[0]['eco_reg'] : 0;
+        $total_final = isset($finalprev[0]['total']) ? $finalprev[0]['total'] : 0;
 
-$prevquo = isset($prevdata[0]) 
-    ? (($prevdata[0]['qua_nonreg'] + ($prevdata[1]['qua_nonreg'] ?? 0)) - ($prevdata[3]['qua_nonreg'] ?? 0)) 
-    : 0;
+        $total_qua_nonreg_3 = $sampleTransaction[1]['qua_nonreg'] + $qua_nonreg_final;
+        $total_eco_nonreg_3 = $sampleTransaction[1]['eco_nonreg'] + $eco_nonreg_final;
+        $total_qua_reg_3 = $sampleTransaction[1]['qua_reg'] + $qua_reg_final;
+        $total_eco_reg_3 = $sampleTransaction[1]['eco_reg'] + $eco_reg_final;
+        $total_total_3 = $total_qua_nonreg_3 + $total_eco_nonreg_3 + $total_qua_reg_3 + $total_eco_reg_3;
+?>
 
-$preveco_nonreg = isset($prevdata[0]) 
-    ? (($prevdata[0]['eco_nonreg'] + ($prevdata[1]['eco_nonreg'] ?? 0)) - ($prevdata[3]['eco_nonreg'] ?? 0)) 
-    : 0;
-
-$prevqua_reg = isset($prevdata[0]) 
-    ? (($prevdata[0]['qua_reg'] + ($prevdata[1]['qua_reg'] ?? 0)) - ($prevdata[3]['qua_reg'] ?? 0)) 
-    : 0;
-
-$preveco_reg = isset($prevdata[0]) 
-    ? (($prevdata[0]['eco_reg'] + ($prevdata[1]['eco_reg'] ?? 0)) - ($prevdata[3]['eco_reg'] ?? 0)) 
-    : 0;
-
-$total = isset($prevdata[0]) 
-    ? (($prevdata[0]['total'] + ($prevdata[1]['total'] ?? 0)) - ($prevdata[3]['total'] ?? 0)) 
-    : 0;
-       
-    } elseif ($i == 2) {
-        $total_qua_nonreg += $regkey['qua_nonreg'];
-        $total_eco_nonreg += $regkey['eco_nonreg'];
-        $total_qua_reg += $regkey['qua_reg'];
-        $total_eco_reg += $regkey['eco_reg'];
-        $total_total +=  $regkey['qua_nonreg']+$regkey['eco_nonreg']+$regkey['qua_reg']+$regkey['eco_reg'];
-    } elseif ($i == 4) {
-        $total_qua_nonreg_4 += $regkey['qua_nonreg'];
-        $total_eco_nonreg_4 += $regkey['eco_nonreg'];
-        $total_qua_reg_4 += $regkey['qua_reg'];
-        $total_eco_reg_4 += $regkey['eco_reg'];
-        $total_total_4 += $regkey['qua_nonreg']+$regkey['eco_nonreg']+$regkey['qua_reg']+$regkey['eco_reg'];
-    } ?>
 <tr>
-<td><?=$i?></td>
-<td>
-<?php if ($regkey['is_commercial'] == 'N') { ?>
-<span style="font-size: 14px;" class="badge">NC</span> 
-<?php } ?>
-<?=$regkey['sample_name']?>
-</td>
-<td>
-  <?php if ($i == 1) { ?>
-    <?=$prevquo.'.00'?> 
-<?php } elseif ($i == 3) { ?>
-    <?=$total_qua_nonreg.'.00'?> 
-<?php } elseif ($i == 5) { ?>
-    <?=$total_qua_nonreg - $total_qua_nonreg_4.'.00'?> 
-<?php } else { ?>
-    <?=$regkey['qua_nonreg']?>
-<?php } ?>
-</td>
-<td>
- <?php if ($i == 1) { ?>
-    <?=$preveco_nonreg.'.00'?> 
-<?php } elseif ($i == 3) { ?>
-    <?=$total_eco_nonreg.'.00'?> 
-<?php } elseif ($i == 5) { ?>
-    <?=$total_eco_nonreg - $total_eco_nonreg_4.'.00'?>
-<?php } else { ?>
-    <?=$regkey['eco_nonreg']?>
-<?php } ?>
-</td>
-<td>
- <?php if ($i == 1) { ?>
-    <?=$prevqua_reg.'.00'?> 
-<?php } elseif ($i == 3) { ?>
-    <?=$total_qua_reg.'.00'?>
-<?php } elseif ($i == 5) { ?>
-    <?=$total_qua_reg - $total_qua_reg_4.'.00'?> 
-<?php } else { ?>
-    <?=$regkey['qua_reg']?>
-<?php } ?>
-</td>
-<td>
- <?php if ($i == 1) { ?>
-    <?=$preveco_reg.'.00'?> 
-<?php } elseif ($i == 3) { ?>
-    <?=$total_eco_reg.'.00'?> 
-<?php } elseif ($i == 5) { ?>
-    <?=$total_eco_reg - $total_eco_reg_4.'.00'?> 
-<?php } else { ?>
-    <?=$regkey['eco_reg']?>
-<?php } ?>
-</td>
- <td>
- <?php if ($i == 1) { ?>
-    <?=$total.'.00'?> 
-<?php } elseif ($i == 3) { ?>
-    <?=$total_total.'.00'?>
-<?php } elseif ($i == 5) { ?>
-    <?=$total_total - $total_total_4.'.00'?> 
-<?php } else { ?>
-    <?= $regkey['qua_nonreg']+ $regkey['eco_nonreg']+ $regkey['qua_reg']+ $regkey['eco_reg'].'.00'  ?>
-<?php } ?>
-</td>
+    <td><?= $i ?></td>
+    <td><?= htmlspecialchars($regkey['sample_name']) ?></td>
+    <td>
+        <?php if ($i == 1) { ?>
+            <?= $qua_nonreg_final . '.00' ?>
+        <?php } elseif ($i == 3) { ?>
+            <?= $total_qua_nonreg_3 . '.00' ?>
+        <?php } else { ?>
+            <?= $regkey['qua_nonreg'] ?>
+        <?php } ?>
+    </td>
+    <td>
+        <?php if ($i == 1) { ?>
+            <?= $eco_nonreg_final . '.00' ?>
+        <?php } elseif ($i == 3) { ?>
+            <?= $total_eco_nonreg_3 . '.00' ?>
+        <?php } else { ?>
+            <?= $regkey['eco_nonreg'] ?>
+        <?php } ?>
+    </td>
+    <td>
+        <?php if ($i == 1) { ?>
+            <?= $qua_reg_final . '.00' ?>
+        <?php } elseif ($i == 3) { ?>
+            <?= $total_qua_reg_3 . '.00' ?>
+        <?php } else { ?>
+            <?= $regkey['qua_reg'] ?>
+        <?php } ?>
+    </td>
+    <td>
+        <?php if ($i == 1) { ?>
+            <?= $eco_reg_final . '.00' ?>
+        <?php } elseif ($i == 3) { ?>
+            <?= $total_eco_reg_3 . '.00' ?>
+        <?php } else { ?>
+            <?= $regkey['eco_reg'] ?>
+        <?php } ?>
+    </td>
+    <td>
+        <?php if ($i == 1) { ?>
+            <?= $total_final . '.00' ?>
+        <?php } elseif ($i == 3) { ?>
+            <?= $total_total_3 . '.00' ?>
+        <?php } else { ?>
+            <?= ($regkey['qua_nonreg'] + $regkey['eco_nonreg'] + $regkey['qua_reg'] + $regkey['eco_reg']) . '.00' ?>
+        <?php } ?>
+    </td>
 </tr>
-<?php $i++; endforeach; } ?>
+<?php $i++; endforeach; 
+?>
+
+<tr>
+    <td>5</td>
+    <td>Samples pending at the end of current month (3-4)</td>
+    <td><?php echo $total_qua_nonreg_3 - $sampleTransaction[3]['qua_nonreg'].'.00' ?></td>
+   <td><?php echo $total_eco_nonreg_3 - $sampleTransaction[3]['eco_nonreg'].'.00' ?></td>
+   <td><?php echo $total_qua_reg_3 - $sampleTransaction[3]['qua_reg'].'.00' ?></td>
+   <td><?php echo $total_eco_reg_3 - $sampleTransaction[3]['eco_reg'].'.00' ?></td>
+   <td><?php echo $total_total_3 - $sampleTransaction[3]['total'].'.00' ?></td>
+
+</tr>
+<?php
+
+ } ?>
+ 
 
 </tbody>
 
@@ -398,9 +394,9 @@ $total = isset($prevdata[0])
 
   $(document).ready(function()
   {
-    $('tr').eq(2).find('input').attr("disabled","true");
-    $('tr').eq(4).find('input').attr("disabled","true");
-    $('tr').eq(6).find('input').attr("disabled","true");
+     $('tr').eq(2).find('input').attr("disabled","true");
+     $('tr').eq(4).find('input').attr("disabled","true");
+    // $('tr').eq(6).find('input').attr("readonly","true");
   });
 
   function setDate()

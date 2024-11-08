@@ -37,8 +37,7 @@
 <script src="assets/js/theme/analytics-dashboard.init.js"></script>
 
 <script src="assets/js/theme/app.js"></script>
-
- <!--  <script type="text/javascript">
+  <script type="text/javascript">
 	window.onload = function() {
     const cardBox = document.getElementById('card-box');
 
@@ -50,7 +49,7 @@
     }, 4000); 
 };
 
-</script>  -->
+</script>
 
 </body>
 </html>

@@ -423,7 +423,7 @@ public function getAssoc($con,$query,$bind)
 				{
 					$str="SELECT st.sample_transaction_id, st.sample_id, SUM(st.qua_nonreg)as qua_nonreg, SUM(st.eco_nonreg)as eco_nonreg, SUM(st.qua_reg)as qua_reg, SUM(st.eco_reg)as eco_reg, SUM(st.total)as total, st.month, st.year, st.publish_date, st.modify_date, st.user_id, st.ro_id, s.sample_name, s.is_commercial  
 					FROM sample_transaction as st LEFT JOIN sample as s ON st.sample_id=s.sample_id WHERE st.user_id=:user_id AND st.month=:month AND st.year=:year
-					GROUP BY st.sample_id";
+					Group BY st.sample_id order by st.sample_id";
 
 					if($user_id=='1'){
 
@@ -449,6 +449,65 @@ public function getAssoc($con,$query,$bind)
 
 				}
 
+
+				public function getCurrentSampleTransactionfinal($db, $con, $user_id, $month, $year)
+				{
+					$str="SELECT st.*, s.sample_name FROM sample_transaction_final as st LEFT JOIN sample as s ON st.sample_id=s.sample_id WHERE st.user_id=:user_id AND st.month=:month AND st.year=:year Group BY st.sample_id";
+
+					 // echo $str;
+					 // echo $user_id;
+					 // echo $month;
+					// echo $year;
+					// die();
+
+					if($user_id=='1'){
+
+						$ro_id = $_SESSION['ro_id'];
+
+						$user_id1=$db->getUserIdByRoId($db, $con,$ro_id);
+
+						$getSampleTransaction=$db->getAssoc($con, $str, array('user_id'=>$user_id1[0]['user_id'], 'month'=>$month, 'year'=>$year));
+
+					}else{
+
+						$getSampleTransaction=$db->getAssoc($con, $str, array('user_id'=>$user_id, 'month'=>$month, 'year'=>$year));
+					}
+
+					if($getSampleTransaction){
+						return $getSampleTransaction;
+					}else{
+						 // echo "ddg";
+					}
+
+
+				}
+
+				public function getCurrentSampleTransactionfinal1($db, $con, $user_id, $month, $year)
+				{
+					$str="SELECT st.*,s.sample_name  FROM sample_transaction_final as st LEFT JOIN sample as s ON st.sample_id=s.sample_id WHERE st.user_id=:user_id AND st.month=:month AND st.year=:year Group BY st.sample_id";
+
+					if($user_id=='1'){
+
+						$ro_id = $_SESSION['ro_id'];
+
+						$user_id1=$db->getUserIdByRoId($db, $con,$ro_id);
+
+						$getSampleTransaction=$db->getAssoc($con, $str, array('user_id'=>$user_id1[0]['user_id'], 'month'=>$month, 'year'=>$year));
+
+					}else{
+
+						
+						$getSampleTransaction=$db->getAssoc($con, $str, array('user_id'=>$user_id, 'month'=>$month, 'year'=>$year));
+
+					}
+
+					if($getSampleTransaction){
+						return $getSampleTransaction;
+					}
+
+
+				}
+
 				function getUserIdByRoId($db, $con,$ro_id) {
 					$sql = "SELECT user_id FROM users WHERE ro_id = :ro_id";
 					$getro=$db->getAssoc($con, $sql, array('ro_id'=>$ro_id));
@@ -466,7 +525,7 @@ public function getAssoc($con,$query,$bind)
 					ROUND((rt.rev_eco_nonreg),2 )as rev_eco_nonreg, ROUND((rt.rev_qua_reg),2)as rev_qua_reg , ROUND((rt.rev_eco_reg),2)as rev_eco_reg,
 					ROUND((rt.rev_total), 2)as rev_total, rt.month, rt.year, rt.publish_date, rt.modify_date, rt.user_id, rt.ro_id
 					FROM revenue_transaction as rt
-					LEFT JOIN revenue_label as r ON r.revenue_label_id=rt.revenue_label_id WHERE rt.user_id=:user_id AND rt.month=:month AND rt.year=:year GROUP BY rt.revenue_label_id";
+					LEFT JOIN revenue_label as r ON r.revenue_label_id=rt.revenue_label_id WHERE rt.user_id=:user_id AND rt.month=:month AND rt.year=:year GROUP BY rt.revenue_label_id  order by r.revenue_label_id";
 
 					if($user_id=='1'){
 

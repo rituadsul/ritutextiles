@@ -11,6 +11,7 @@ header("location:add_training.php");exit;
 
 if (isset($_POST['btnSaveSample'])) 
 {
+    print_r($_POST);die();
 
 $month=$_SESSION['month'];
 $year=$_SESSION['year'];
@@ -174,49 +175,59 @@ $prevqua_reg = isset($prevdata[8]) ? ($prevdata[8]['rev_qua_reg'] ?? 0) : 0;
 $preveco_reg = isset($prevdata[8]) ? ($prevdata[8]['rev_eco_reg'] ?? 0) : 0;
 $total = isset($prevdata[8]) ? ($prevdata[8]['rev_total'] ?? 0) : 0;
 
+$prevquo_gst = $prevquo * 0.18;
+$preveco_nonreg_gst = $preveco_nonreg * 0.18;
+$prevqua_reg_gst = $prevqua_reg * 0.18;
+$preveco_reg_gst = $preveco_reg * 0.18;
+$total_gst = $prevquo_gst + $preveco_nonreg_gst + $prevqua_reg_gst + $preveco_reg_gst;
 $i=1; 
 foreach ($getRevenueList as $index => $regkey): 
 
 
 ?>
 <tr>
-<td><?=$i?></td>
-<td>
-<?php //if($regkey['is_commercial']=='Y'){?>
-<!-- <span style="font-size: 14px;" class="badge badge-warning">C</span>  -->
-<?php //} else { ?>
-<!-- <span style="font-size: 14px;" class="badge badge-danger">NC</span>  -->
-<?php // } ?>
-<?=$regkey['revenue_label_name']?>
-</td>
-<td>
-<input type="number" step="0.01" onkeypress="return event.charCode >= 46" pattern = "[0-9]" min="0" class="form-control"  name="rev_qua_nonreg<?=$regkey['revenue_label_id']?>"  id="rev_qua_nonreg<?=$regkey['revenue_label_id']?>" required value="<?= $index === 0 ? $prevquo : ''; ?>" >
-</td>
-<td>
-<input type="number" step="0.01" onkeypress="return event.charCode >= 46" pattern = "[0-9]" min="0" class="form-control" name="rev_eco_nonreg<?=$regkey['revenue_label_id']?>" id="rev_eco_nonreg<?=$regkey['revenue_label_id']?>" required  value="<?= $index === 0 ? $preveco_nonreg : ''; ?>">
-</td>
-<td>
-<input type="number" step="0.01" onkeypress="return event.charCode >= 46" pattern = "[0-9]" min="0" class="form-control" name="rev_qua_reg<?=$regkey['revenue_label_id']?>" id="rev_qua_reg<?=$regkey['revenue_label_id']?>" required value="<?= $index === 0 ? $prevqua_reg : ''; ?>">
-</td>
-<td> 
-<input type="number" step="0.01" onkeypress="return event.charCode >= 46" pattern = "[0-9]" min="0" class="form-control" name="rev_eco_reg<?=$regkey['revenue_label_id']?>" id="rev_eco_reg<?=$regkey['revenue_label_id']?>" required value="<?= $index === 0 ? $preveco_reg : ''; ?>">
-</td>
-<td>
-<input type="number" step="0.01" onkeypress="return event.charCode >= 46" class="form-control" name="rev_total<?=$regkey['revenue_label_id']?>" id="rev_total<?=$regkey['revenue_label_id']?>" disabled  required value="<?= $index === 0 ? $total : ''; ?>">
-</td> 
-
+    <td><?=$i?></td>
+    <td><?=$regkey['revenue_label_name']?></td>
+    <td><input type="number" step="0.01" class="form-control" id="rev_qua_nonreg<?=$regkey['revenue_label_id']?>" name="rev_qua_nonreg<?=$regkey['revenue_label_id']?>" value="<?= $index === 0 ? $prevquo : ''; ?><?= $index === 1 ? $prevquo_gst : ''; ?>" required></td>
+    <td><input type="number" step="0.01" class="form-control" id="rev_eco_nonreg<?=$regkey['revenue_label_id']?>" name="rev_eco_nonreg<?=$regkey['revenue_label_id']?>" value="<?= $index === 0 ? $preveco_nonreg : ''; ?><?= $index === 1 ? $preveco_nonreg_gst : ''; ?>" required></td>
+    <td><input type="number" step="0.01" class="form-control" id="rev_qua_reg<?=$regkey['revenue_label_id']?>" name="rev_qua_reg<?=$regkey['revenue_label_id']?>" value="<?= $index === 0 ? $prevqua_reg : ''; ?><?= $index === 1 ? $prevqua_reg_gst : ''; ?>" required></td>
+    <td><input type="number" step="0.01" class="form-control" id="rev_eco_reg<?=$regkey['revenue_label_id']?>" name="rev_eco_reg<?=$regkey['revenue_label_id']?>" value="<?= $index === 0 ? $preveco_reg : ''; ?><?= $index === 1 ? $preveco_reg_gst : ''; ?>" required></td>
+    <td><input type="number" step="0.01" class="form-control" id="rev_total<?=$regkey['revenue_label_id']?>" name="rev_total<?=$regkey['revenue_label_id']?>" value="<?= $index === 0 ? $total : ''; ?><?= $index === 1 ? $prevquo_gst : ''; ?>" disabled required></td>
 </tr>
+
 <?php $i++; endforeach;
 
 } else {
 $i = 1;
 if (isset($revenue_transaction)) {
+    $prevmonth = $_SESSION['month'] - 1;
+$prevdata = $db->getCurrentRevenueTransaction($db, $db->con, $user_id, $prevmonth, $year);
+
+$prevquo = isset($prevdata[8]) ? ($prevdata[8]['rev_qua_nonreg'] ?? 0) : 0;
+$preveco_nonreg = isset($prevdata[8]) ? ($prevdata[8]['rev_eco_nonreg'] ?? 0) : 0;
+$prevqua_reg = isset($prevdata[8]) ? ($prevdata[8]['rev_qua_reg'] ?? 0) : 0;
+$preveco_reg = isset($prevdata[8]) ? ($prevdata[8]['rev_eco_reg'] ?? 0) : 0;
+$total = isset($prevdata[8]) ? ($prevdata[8]['rev_total'] ?? 0) : 0;
+
+$prevquo_gst = $prevquo * 0.18;
+$preveco_nonreg_gst = $preveco_nonreg * 0.18;
+$prevqua_reg_gst = $prevqua_reg * 0.18;
+$preveco_reg_gst = $preveco_reg * 0.18;
+$total_gst = $prevquo_gst + $preveco_nonreg_gst + $prevqua_reg_gst + $preveco_reg_gst;
+
 foreach ($revenue_transaction as $rt): ?>
 <tr>
 <td><?= $i ?></td>
 <td>
-
-<?= $rt['revenue_label_name'] ?>
+<?php 
+if($i==1)
+{
+    echo $prevquo;
+}elseif($i==2){
+echo $prevquo_gst;
+}else
+{ echo $rt['revenue_label_name']; 
+}?>
 </td>
 <td>
 <?= htmlspecialchars($rt['rev_qua_nonreg']) ?>
@@ -253,7 +264,8 @@ endforeach;
 <?php } else {?>  
 <button class="btn btn-primary" name="btnSaveSample1" type="submit" style="float: right;">
 <i class="fa fa-fw fa-lg fa-check-circle"></i>Next
-</button><?php } ?>  
+</button><?php } ?> 
+</form> 
 
 </div>
 </div>
@@ -272,13 +284,16 @@ endforeach;
 <script src="assets/js/functions/revenue_calc.js"></script>
 <script>
 $(document).ready(function() {
-    $('tr').eq(3).find('input').prop("disabled", true);
-    $('tr').eq(5).find('input').prop("disabled", true);
-    $('tr').eq(6).find('input').prop("disabled", true);
-    $('tr').eq(7).find('input').prop("disabled", true);
-    $('tr').eq(9).find('input').prop("disabled", true);
-    $('tr').eq(10).find('input').prop("disabled", true);
-    $('tr').eq(11).find('input').prop("disabled", true);
+   // Select specific rows and apply the required styles and properties
+$('tr').eq(2).find('input').prop("disabled", true).css("background-color", "#f8f9fa");
+$('tr').eq(3).find('input').prop("disabled", true).css("background-color", "#f8f9fa");
+$('tr').eq(5).find('input').prop("readonly", true).css("background-color", "#f8f9fa");
+$('tr').eq(6).find('input').prop("readonly", true).css("background-color", "#f8f9fa");
+$('tr').eq(7).find('input').prop("readonly", true).css("background-color", "#f8f9fa");
+$('tr').eq(9).find('input').prop("readonly", true).css("background-color", "#f8f9fa");
+$('tr').eq(10).find('input').prop("readonly", true).css("background-color", "#f8f9fa");
+$('tr').eq(11).find('input').prop("readonly", true).css("background-color", "#f8f9fa");
+
     console.log("Disabled inputs in rows: 3, 5, 6, 7, 9, 10, 11");
 });
 </script>
