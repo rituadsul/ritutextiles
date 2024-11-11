@@ -2,66 +2,8 @@
 
 $getSampleList=$db->labelList($db, $db->con);
 
-$sqlquery = "SELECT year, month
-FROM sample_transaction_final
-WHERE `user_id`=:user_id
-ORDER BY year DESC, month DESC
-LIMIT 1;
-";
 
-$valarray88 = array('user_id'=>$user_id);
 
-$get = $db->getAssoc($db->con, $sqlquery, $valarray88);
-
-$currentMonth = $month;
-$currentYear = $year;
-
-$endMonth = $get[0]['month'];
-$endYear = $get[0]['year'];
-
-while ($currentYear < $endYear || ($currentYear == $endYear && $currentMonth <= $endMonth)) {
-    echo "Processing year: $currentYear, month: $currentMonth\n";
-
-    $sampleTransaction=$db->getCurrentSampleTransaction($db, $db->con, $user_id, $currentMonth, $currentYear);
-
-    if($currentMonth =='01'|| $currentMonth =='1'){
-        $prevmonth = '12';
-        $currentYear = $currentYear - 1;
-     }else{
-        $prevmonth = $currentMonth - 1;
-    }
-    $finalprev = $db->getCurrentSampleTransactionfinal1($db, $db->con, $user_id, $prevmonth, $currentYear);
-
-       $qua_nonreg_final = isset($finalprev[0]['qua_nonreg']) ? $finalprev[0]['qua_nonreg'] : 0;
-        $eco_nonreg_final = isset($finalprev[0]['eco_nonreg']) ? $finalprev[0]['eco_nonreg'] : 0;
-        $qua_reg_final = isset($finalprev[0]['qua_reg']) ? $finalprev[0]['qua_reg'] : 0;
-        $eco_reg_final = isset($finalprev[0]['eco_reg']) ? $finalprev[0]['eco_reg'] : 0;
-        $total_final = isset($finalprev[0]['total']) ? $finalprev[0]['total'] : 0;
-
-        $total_qua_nonreg_3 = $sampleTransaction[1]['qua_nonreg'] + $qua_nonreg_final;
-        $total_eco_nonreg_3 = $sampleTransaction[1]['eco_nonreg'] + $eco_nonreg_final;
-        $total_qua_reg_3 = $sampleTransaction[1]['qua_reg'] + $qua_reg_final;
-        $total_eco_reg_3 = $sampleTransaction[1]['eco_reg'] + $eco_reg_final;
-        $total_total_3 = $total_qua_nonreg_3 + $total_eco_nonreg_3 + $total_qua_reg_3 + $total_eco_reg_3;
-
-        $qua_nonreg_5 = $total_qua_nonreg_3 - $sampleTransaction[3]['qua_nonreg'] ;
-        $eco_nonreg_5 = $total_eco_nonreg_3 - $sampleTransaction[3]['eco_nonreg'];
-        $qua_reg_5 = $total_qua_reg_3 - $sampleTransaction[3]['qua_reg'];
-        $eco_reg_5 = $total_eco_reg_3 - $sampleTransaction[3]['eco_reg'];
-        $total_5 = $total_total_3 - $sampleTransaction[3]['total'];
-
-        $sqlf="UPDATE `sample_transaction_final` SET `qua_nonreg`=:qua_nonreg, `eco_nonreg`=:eco_nonreg, `qua_reg`=:qua_reg, `eco_reg`=:eco_reg,`total`=:total WHERE user_id=:user_id AND month=:month AND year=:year" ;
-
-        $addSample = $db->setData($db->con, $sqlf, array('qua_nonreg'=>$qua_nonreg_5, 'eco_nonreg'=>$eco_nonreg_5, 'qua_reg'=>$qua_reg_5, 'eco_reg'=>$eco_reg_5, 'total'=>$total_5,'user_id'=>$user_id, 'month'=>$currentMonth, 'year'=>$currentYear));
-
-    
-    if ($currentMonth == 12) {
-        $currentMonth = 1;
-        $currentYear++;
-    } else {
-        $currentMonth++;
-    }
-}
 
 if (isset($_POST['btnSaveSample1'])) 
 {
@@ -141,6 +83,26 @@ $db->addPageHistory($db, $db->con, $user_id, $page, $enter_date);
 
 $_SESSION['success']="Sample Data Added";
 
+$sqlquery = "SELECT year, month
+FROM sample_transaction_final
+WHERE `user_id`=:user_id
+ORDER BY year DESC, month DESC
+LIMIT 1;
+";
+
+$valarray88 = array('user_id'=>$user_id);
+
+$get = $db->getAssoc($db->con, $sqlquery, $valarray88);
+
+$currentMonth = $month;
+$currentYear = $year;
+
+$endMonth = $get[0]['month'];
+$endYear = $get[0]['year'];
+
+ // echo "Processing year: $currentYear, month: $currentMonth\n";die();
+
+
 
 // print_r($get);die();
 
@@ -164,12 +126,97 @@ $_SESSION['year']=date("Y", strtotime($enter_date));
 $_SESSION['enter_date']=$enter_date;
 $month= $_SESSION['month'];
 $year = $_SESSION['year'];
+
 }else{
 $enter_date = date('Y-m-d');
 $_SESSION['month']=date("m", strtotime($enter_date));
 $_SESSION['year']=date("Y", strtotime($enter_date));
 $_SESSION['enter_date']=$enter_date;
 }
+
+
+$sqlquery = "SELECT year, month
+FROM sample_transaction_final
+WHERE `user_id`=:user_id
+ORDER BY year DESC, month DESC
+LIMIT 1;
+";
+
+$valarray88 = array('user_id'=>$user_id);
+
+$get = $db->getAssoc($db->con, $sqlquery, $valarray88);
+
+$currentMonth = $month;
+$currentYear =$year;
+
+$endMonth = isset($get[0]['month']) ? $get[0]['month'] : 0;
+$endYear = isset($get[0]['year']) ? $get[0]['year'] : 0;
+
+for ($i = $currentMonth; $currentYear < $endYear || ($currentYear == $endYear && $i <= $endMonth); $i++) {
+
+    if($currentMonth =='01'|| $currentMonth =='1'){
+        $prevmonth = '12';
+        $prevYear = $currentYear - 1;
+         $finalprev = $db->getCurrentSampleTransactionfinal1($db, $db->con, $user_id, $prevmonth, $prevYear);
+
+     }else{
+        $prevmonth = $currentMonth - 1;
+         $finalprev = $db->getCurrentSampleTransactionfinal1($db, $db->con, $user_id, $prevmonth, $currentYear);
+    }
+
+      // echo $currentMonth ."-". $currentYear; die();
+    
+     $sampleTransaction=$db->getCurrentSampleTransaction($db, $db->con, $user_id, $currentMonth, $currentYear);
+   
+       $qua_nonreg_final = isset($finalprev[0]['qua_nonreg']) ? $finalprev[0]['qua_nonreg'] : 0;
+        $eco_nonreg_final = isset($finalprev[0]['eco_nonreg']) ? $finalprev[0]['eco_nonreg'] : 0;
+        $qua_reg_final = isset($finalprev[0]['qua_reg']) ? $finalprev[0]['qua_reg'] : 0;
+        $eco_reg_final = isset($finalprev[0]['eco_reg']) ? $finalprev[0]['eco_reg'] : 0;
+        $total_final = isset($finalprev[0]['total']) ? $finalprev[0]['total'] : 0;
+
+      if (is_array($sampleTransaction) && isset($sampleTransaction[1])) {
+    $total_qua_nonreg_3 = $sampleTransaction[1]['qua_nonreg'] + $qua_nonreg_final;
+    $total_eco_nonreg_3 = $sampleTransaction[1]['eco_nonreg'] + $eco_nonreg_final;
+    $total_qua_reg_3 = $sampleTransaction[1]['qua_reg'] + $qua_reg_final;
+    $total_eco_reg_3 = $sampleTransaction[1]['eco_reg'] + $eco_reg_final;
+    $total_total_3 = $total_qua_nonreg_3 + $total_eco_nonreg_3 + $total_qua_reg_3 + $total_eco_reg_3;
+} else {
+    $total_qua_nonreg_3 = 0;
+    $total_eco_nonreg_3 = 0;
+    $total_qua_reg_3 = 0;
+    $total_eco_reg_3 = 0;
+    $total_total_3 = 0;
+}
+
+if (is_array($sampleTransaction) && isset($sampleTransaction[3])) {
+    $qua_nonreg_5 = $total_qua_nonreg_3 - $sampleTransaction[3]['qua_nonreg'];
+    $eco_nonreg_5 = $total_eco_nonreg_3 - $sampleTransaction[3]['eco_nonreg'];
+    $qua_reg_5 = $total_qua_reg_3 - $sampleTransaction[3]['qua_reg'];
+    $eco_reg_5 = $total_eco_reg_3 - $sampleTransaction[3]['eco_reg'];
+    $total_5 = $total_total_3 - $sampleTransaction[3]['total'];
+} else {
+    $qua_nonreg_5 = 0;
+    $eco_nonreg_5 = 0;
+    $qua_reg_5 = 0;
+    $eco_reg_5 = 0;
+    $total_5 = 0;
+}
+
+        $sqlf="UPDATE `sample_transaction_final` SET `qua_nonreg`=:qua_nonreg, `eco_nonreg`=:eco_nonreg, `qua_reg`=:qua_reg, `eco_reg`=:eco_reg,`total`=:total WHERE user_id=:user_id AND month=:month AND year=:year" ;
+
+        $addSample = $db->setData($db->con, $sqlf, array('qua_nonreg'=>$qua_nonreg_5, 'eco_nonreg'=>$eco_nonreg_5, 'qua_reg'=>$qua_reg_5, 'eco_reg'=>$eco_reg_5, 'total'=>$total_5,'user_id'=>$user_id, 'month'=>$currentMonth, 'year'=>$currentYear));
+
+
+    if ($currentMonth == 12) {
+        $currentMonth = 1;
+        $currentYear++;
+    } else {
+        $currentMonth++;
+    }
+     
+   
+}
+
 
 
 $sampleTransaction=$db->getCurrentSampleTransaction($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year']);
