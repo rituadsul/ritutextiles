@@ -548,6 +548,33 @@ public function getAssoc($con,$query,$bind)
 					}
 				}
 
+
+				public function getCurrentRevenueTransactionfinal($db, $con, $user_id, $month, $year)
+				{
+					$str="SELECT rt.*,r.* FROM revenue_transaction_final as rt
+					LEFT JOIN revenue_label as r ON r.revenue_label_id=rt.revenue_label_id WHERE rt.user_id=:user_id AND rt.month=:month AND rt.year=:year GROUP BY rt.revenue_label_id, r.revenue_label_id";
+
+					if($user_id=='1'){
+
+						$ro_id = $_SESSION['ro_id'];
+
+						$user_id1=$db->getUserIdByRoId($db, $con,$ro_id);
+
+						$getRevenueTransaction=$db->getAssoc($con, $str, array('user_id'=>$user_id1[0]['user_id'], 'month'=>$month, 'year'=>$year));
+
+					}else{
+
+
+						$getRevenueTransaction=$db->getAssoc($con, $str, array('user_id'=>$user_id, 'month'=>$month, 'year'=>$year));
+
+					}
+
+					if($getRevenueTransaction)
+					{
+						return $getRevenueTransaction;
+					}
+				}
+
 				public function getCurrentRevenueTransaction1($db, $con, $user_id, $month, $year)
 				{
 					$str="SELECT rt.revenue_transaction_id, rt.revenue_label_id, r.revenue_label_name, ROUND((rt.rev_qua_nonreg),2)as rev_qua_nonreg, 
