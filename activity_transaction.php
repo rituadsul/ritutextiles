@@ -226,7 +226,7 @@
   <th>Training Program</th>
   <th>Consultancy Charges (Rs.)</th>
   <th>GST (18%)</th>
-  <th><button type="button" class="btn btn-success addRowBtn" style="padding: 0.2rem;"><i data-feather="plus" style="width:20"></i></button></th>
+  <th><button type="button" class="btn btn-success addRowBtn" style="padding: 0.2rem;"><i data-feather="plus" style="width:21"></i></button></th>
   </tr>
   </thead>
   <tbody>
@@ -261,7 +261,7 @@
   </td>
 
   <td>
-  <input class="form-control amount" type="text" name="amount[]" placeholder="Enter Amount" required>
+  <input class="form-control amount" type="text" name="amount[]" id="amount" placeholder="Enter Amount" required>
   </td>
   <td>
   <input class="form-control gst_amount" type="text" name="gst_amount[]" placeholder="GST" readonly>
@@ -274,6 +274,13 @@
   </tr>
   </tbody>
   </table>
+
+  <div class="form-group row py-2">                 
+<div class="col-md-8">
+<button class="btn btn-primary" name="btnAddActivity" type="submit" id="btnAddActivity"><i class="fa fa-fw fa-lg fa-check-circle"></i>Add Activity Details</button>
+</div>
+</div>              
+
   </div>
 
   </form>
@@ -413,51 +420,48 @@
 
   <?php  require('footer.php'); ?>
 
-  <script>
-  document.getElementById('btnAddActivity').addEventListener('click', function(event) {
-  const dateInput = document.getElementById('date_of_completion').value;
-  const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
 
-  if (!dateInput.match(datePattern) || !isValidDate(dateInput)) {
-  event.preventDefault();
-  alert('Please enter a valid date in the format YYYY-MM-DD.');
-  }
+    document.getElementById('btnAddActivity').addEventListener('click', function(event) {
+      const dateInput = document.getElementById('date_of_completion').value;
+      const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+      if (!dateInput.match(datePattern) || !isValidDate(dateInput)) {
+        event.preventDefault();
+        alert('Please enter a valid date in the format YYYY-MM-DD.');
+      }
+    });
+
+ 
+    document.getElementById('btnAddActivity').addEventListener('click', function(event) {
+      const dateInput = document.getElementById('date_of_commencement').value;
+      const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+      if (!dateInput.match(datePattern) || !isValidDate(dateInput)) {
+        event.preventDefault();
+        alert('Please enter a valid date in the format YYYY-MM-DD.');
+      }
+    });
+
+   
+    document.getElementById("amount").addEventListener("blur", function() {
+      var amount = parseFloat(this.value);
+
+      if (!isNaN(amount)) {
+        var gst = (18 / 100 * amount).toFixed(2);
+        document.getElementById("gst_amount").value = gst;
+      } else {
+        document.getElementById("gst_amount").value = '';
+      }
+    });
   });
-
   function isValidDate(dateString) {
-  const date = new Date(dateString);
-  return date && date.getFullYear() == dateString.split('-')[0];
+    const date = new Date(dateString);
+    return date && date.getFullYear() == dateString.split('-')[0];
   }
-  </script>
-  <script>
-  document.getElementById('btnAddActivity').addEventListener('click', function(event) {
-  const dateInput = document.getElementById('date_of_commencement').value;
-  const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+</script>
 
-  if (!dateInput.match(datePattern) || !isValidDate(dateInput)) {
-  event.preventDefault();
-  alert('Please enter a valid date in the format YYYY-MM-DD.');
-  }
-  });
-
-  function isValidDate(dateString) {
-  const date = new Date(dateString);
-  return date && date.getFullYear() == dateString.split('-')[0];
-  }
-  </script>
-
-  <script type="text/javascript">
-  document.getElementById("amount").addEventListener("blur", function() {
-  var amount = parseFloat(this.value);
-
-  if (!isNaN(amount)) { 
-  var gst = (18 / 100 * amount).toFixed(2);
-  document.getElementById("gst_amount").value = gst;
-  } else {
-  document.getElementById("gst_amount").value = '';
-  }
-  });
-  </script>
   <script>
   function checkme() {
   var infodiv = document.getElementById('infodiv');

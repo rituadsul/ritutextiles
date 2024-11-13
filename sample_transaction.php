@@ -512,7 +512,8 @@ $(document).ready(function()
 {
 $('tr').eq(2).find('input').attr("disabled","true");
 $('tr').eq(4).find('input').attr("disabled","true");
-// $('tr').eq(6).find('input').attr("readonly","true");
+$('tr').eq(6).find('input').prop("readonly", true).css("background-color", "#f8f9fa");
+
 });
 
 function setDate()

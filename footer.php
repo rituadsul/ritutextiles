@@ -34,22 +34,24 @@
 
 <script src="assets/js/theme/jquery-3.6.0.min.js"></script>
 
-<script src="assets/js/theme/analytics-dashboard.init.js"></script>
+<!-- <script src="assets/js/theme/analytics-dashboard.init.js"></script> -->
 
 <script src="assets/js/theme/app.js"></script>
-  <script type="text/javascript">
-	window.onload = function() {
-    const cardBox = document.getElementById('card-box');
-
-    setTimeout(() => {
-        cardBox.style.opacity = '0';
-        setTimeout(() => {
-            cardBox.style.display = 'none';
-        }, 500); 
-    }, 4000); 
-};
-
-</script>
+   <script type="text/javascript">
+        window.onload = function() {
+            const cardBox = document.getElementById('card-box');
+            if (cardBox) {
+                setTimeout(() => {
+                    cardBox.style.opacity = '0';
+                    setTimeout(() => {
+                        cardBox.style.visibility = 'hidden';
+                    }, 500); 
+                }, 4000);
+            } else {
+                // console.error("Element with ID 'card-box' not found");
+            }
+        };
+    </script>
 
 </body>
 </html>

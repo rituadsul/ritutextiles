@@ -16,56 +16,11 @@ header("location:ro_report.php");
 }
 
 
-if(isset($_POST['btnAddManpower']))
-{
-
-$designation_id=trim($_POST['designation_id']);
-$from_lab=trim($_POST['from_lab']);
-$from_other=trim($_POST['from_other']);
-$publish_date=date("Y-m-d H:i:s");
-$month=$_SESSION['month'];
-$year=$_SESSION['year'];
-
-
-$sqlstr="INSERT INTO `manpower_available`( `designation_id`, `from_lab`, `from_other`, `month`, `year`, `user_id`, `publish_date`) VALUES (:designation_id, :from_lab,:from_other,:month, :year, :user_id, :publish_date )";
-
-$addLabel=$db->setData(
-$db->con,
-$sqlstr, 
-array(
-'designation_id'=>$designation_id,
-'from_lab'=>$from_lab,
-'from_other'=>$from_other,
-'month'=>$month,
-'year'=>$year,
-'user_id'=>$user_id,
-'publish_date'=>$publish_date
-
-));
-
-if($addLabel)
-{
-
-$_SESSION['success']=" Added";
-header("location:manpower.php");exit;
-}
-else{
-
-$_SESSION['error']=" Not Added";
-header("location:manpower.php");exit;
-}
-}elseif(isset($_POST['btntest'])){
-$enter_date = $_POST['enter_date'];
-$_SESSION['month']=date("m", strtotime($enter_date));
-$_SESSION['year']=date("Y", strtotime($enter_date));
-$_SESSION['enter_date']=$enter_date;
-}else{
-}
 
 if (isset($_POST['btnSaveSubmit'])) 
 {
 
-	// print_r($_POST);die();
+	 print_r($_POST);die();
 $technical_manpower = $_POST['technical_manpower'];
 $working_day = $_POST['working_day'];
 $extra_man_day = $_POST['extra_man_day'];
@@ -129,6 +84,53 @@ else
 
 
 
+}
+
+
+if(isset($_POST['btnAddManpower']))
+{
+
+$designation_id=trim($_POST['designation_id']);
+$from_lab=trim($_POST['from_lab']);
+$from_other=trim($_POST['from_other']);
+$publish_date=date("Y-m-d H:i:s");
+$month=$_SESSION['month'];
+$year=$_SESSION['year'];
+
+
+$sqlstr="INSERT INTO `manpower_available`( `designation_id`, `from_lab`, `from_other`, `month`, `year`, `user_id`, `publish_date`) VALUES (:designation_id, :from_lab,:from_other,:month, :year, :user_id, :publish_date )";
+
+$addLabel=$db->setData(
+$db->con,
+$sqlstr, 
+array(
+'designation_id'=>$designation_id,
+'from_lab'=>$from_lab,
+'from_other'=>$from_other,
+'month'=>$month,
+'year'=>$year,
+'user_id'=>$user_id,
+'publish_date'=>$publish_date
+
+));
+
+if($addLabel)
+{
+
+$_SESSION['success']=" Added";
+header("location:manpower.php");exit;
+}
+else{
+
+$_SESSION['error']=" Not Added";
+header("location:manpower.php");exit;
+}
+}elseif(isset($_POST['btntest'])){
+$enter_date = $_POST['enter_date'];
+$_SESSION['month']=date("m", strtotime($enter_date));
+$_SESSION['year']=date("Y", strtotime($enter_date));
+$_SESSION['enter_date']=$enter_date;
+}else{
 }
 
 
