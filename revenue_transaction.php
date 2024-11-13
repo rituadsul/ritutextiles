@@ -103,6 +103,8 @@ $enter_date = $_POST['enter_date'];
 $_SESSION['month']=date("m", strtotime($enter_date));
 $_SESSION['year']=date("Y", strtotime($enter_date));
 $_SESSION['enter_date']=$enter_date;
+$month= $_SESSION['month'];
+$year = $_SESSION['year'];
 }else{
 }
 

@@ -136,7 +136,7 @@ else
                                             <input class="form-control" type="password" required="" id="password" placeholder="Enter your password" name="password">
                                         </div>
 
-                                        <div class="form-group d-flex mb-3">
+                                       <!--  <div class="form-group d-flex mb-3">
                                             <div class="col-sm-6">
                                                 <div class="form-check">
                                                     <input type="checkbox" class="form-check-input" id="checkbox-signin" checked>
@@ -145,7 +145,7 @@ else
                                             </div>
 
                                         </div>
-
+ -->
                                         <div class="form-group mb-0">
                                             <div class="col-12">
                                                 <div class="d-grid">

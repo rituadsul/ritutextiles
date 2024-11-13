@@ -552,7 +552,7 @@ public function getAssoc($con,$query,$bind)
 				public function getCurrentRevenueTransactionfinal($db, $con, $user_id, $month, $year)
 				{
 					$str="SELECT rt.*,r.* FROM revenue_transaction_final as rt
-					LEFT JOIN revenue_label as r ON r.revenue_label_id=rt.revenue_label_id WHERE rt.user_id=:user_id AND rt.month=:month AND rt.year=:year GROUP BY rt.revenue_label_id, r.revenue_label_id";
+					LEFT JOIN revenue_label as r ON r.revenue_label_id=rt.revenue_label_id WHERE rt.user_id=:user_id AND rt.month=:month AND rt.year=:year GROUP BY rt.revenue_label_id";
 
 					if($user_id=='1'){
 
@@ -577,11 +577,14 @@ public function getAssoc($con,$query,$bind)
 
 				public function getCurrentRevenueTransaction1($db, $con, $user_id, $month, $year)
 				{
-					$str="SELECT rt.revenue_transaction_id, rt.revenue_label_id, r.revenue_label_name, ROUND((rt.rev_qua_nonreg),2)as rev_qua_nonreg, 
-					ROUND((rt.rev_eco_nonreg),2 )as rev_eco_nonreg, ROUND((rt.rev_qua_reg),2)as rev_qua_reg , ROUND((rt.rev_eco_reg),2)as rev_eco_reg,
-					ROUND((rt.rev_total), 2)as rev_total, rt.month, rt.year, rt.publish_date, rt.modify_date, rt.user_id, rt.ro_id
-					FROM revenue_transaction as rt
-					LEFT JOIN revenue_label as r ON r.revenue_label_id=rt.revenue_label_id WHERE rt.user_id=:user_id AND rt.month=:month AND rt.year=:year GROUP BY rt.revenue_label_id";
+					// $str="SELECT rt.revenue_transaction_id, rt.revenue_label_id, r.revenue_label_name, ROUND((rt.rev_qua_nonreg),2)as rev_qua_nonreg, 
+					// ROUND((rt.rev_eco_nonreg),2 )as rev_eco_nonreg, ROUND((rt.rev_qua_reg),2)as rev_qua_reg , ROUND((rt.rev_eco_reg),2)as rev_eco_reg,
+					// ROUND((rt.rev_total), 2)as rev_total, rt.month, rt.year, rt.publish_date, rt.modify_date, rt.user_id, rt.ro_id
+					// FROM revenue_transaction as rt
+					// LEFT JOIN revenue_label as r ON r.revenue_label_id=rt.revenue_label_id WHERE rt.user_id=:user_id AND rt.month=:month AND rt.year=:year GROUP BY rt.revenue_label_id";
+
+					$str = "SELECT rt.*,r.* FROM revenue_transaction as rt
+					LEFT JOIN revenue_label as r ON r.revenue_label_id=rt.revenue_label_id WHERE rt.user_id=:user_id AND rt.month=:month AND rt.year=:year GROUP BY rt.revenue_label_id order by r.revenue_label_id";
 
 					if($user_id=='1'){
 

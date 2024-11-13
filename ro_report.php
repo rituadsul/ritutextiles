@@ -331,6 +331,98 @@ if($done==1)
 
 $_SESSION['success']="Revenue Data Updated";
 
+$sqlquery = "SELECT year, month
+FROM revenue_transaction_final
+WHERE `user_id`=:user_id
+ORDER BY year DESC, month DESC
+LIMIT 1;
+";
+
+$valarray88 = array('user_id'=>$user_id);
+
+$get = $db->getAssoc($db->con, $sqlquery, $valarray88);
+
+$currentMonth = $month;
+$currentYear =$year;
+
+$endMonth = isset($get[0]['month']) ? $get[0]['month'] : 0;
+$endYear = isset($get[0]['year']) ? $get[0]['year'] : 0;
+
+for ($i = $currentMonth; $currentYear < $endYear || ($currentYear == $endYear && $i <= $endMonth); $i++) {
+
+if($currentMonth =='01'|| $currentMonth =='1'){
+$prevmonth = '12';
+$prevYear = $currentYear - 1;
+$finalprev = $db->getCurrentRevenueTransactionfinal($db, $db->con, $user_id, $prevmonth, $prevYear);
+
+}else{
+$prevmonth = $currentMonth - 1;
+$finalprev = $db->getCurrentRevenueTransactionfinal($db, $db->con, $user_id, $prevmonth, $currentYear);
+}
+
+$revenue_transaction = $db->getCurrentRevenueTransaction($db, $db->con, $user_id, $currentMonth, $currentYear);
+
+// print_r($finalprev);die();
+
+$qua_nonreg_final = isset($finalprev[0]['rev_qua_nonreg']) ? $finalprev[0]['rev_qua_nonreg'] : 0;
+$eco_nonreg_final = isset($finalprev[0]['rev_eco_nonreg']) ? $finalprev[0]['rev_eco_nonreg'] : 0;
+$qua_reg_final = isset($finalprev[0]['rev_qua_reg']) ? $finalprev[0]['rev_qua_reg'] : 0;
+$eco_reg_final = isset($finalprev[0]['rev_eco_reg']) ? $finalprev[0]['rev_eco_reg'] : 0;
+$total_final = isset($finalprev[0]['rev_total']) ? $finalprev[0]['rev_total'] : 0;
+
+if (is_array($revenue_transaction) && isset($revenue_transaction[1])) {
+$total_qua_nonreg_3 = $revenue_transaction[2]['rev_qua_nonreg'] + $qua_nonreg_final;
+$total_eco_nonreg_3 = $revenue_transaction[2]['rev_eco_nonreg'] + $eco_nonreg_final;
+$total_qua_reg_3 = $revenue_transaction[2]['rev_qua_reg'] + $qua_reg_final;
+$total_eco_reg_3 = $revenue_transaction[2]['rev_eco_reg'] + $eco_reg_final;
+$total_total_3 = $total_qua_nonreg_3 + $total_eco_nonreg_3 + $total_qua_reg_3 + $total_eco_reg_3;
+} else {
+$total_qua_nonreg_3 = 0;
+$total_eco_nonreg_3 = 0;
+$total_qua_reg_3 = 0;
+$total_eco_reg_3 = 0;
+$total_total_3 = 0;
+}
+
+if (is_array($revenue_transaction) && isset($revenue_transaction[6])) {
+$qua_nonreg_5 = $total_qua_nonreg_3 - $revenue_transaction[6]['rev_qua_nonreg'];
+$eco_nonreg_5 = $total_eco_nonreg_3 - $revenue_transaction[6]['rev_eco_nonreg'];
+$qua_reg_5 = $total_qua_reg_3 - $revenue_transaction[6]['rev_qua_reg'];
+$eco_reg_5 = $total_eco_reg_3 - $revenue_transaction[6]['rev_eco_reg'];
+$total_5 = $total_total_3 - $revenue_transaction[6]['rev_total'];
+} else {
+$qua_nonreg_5 = 0;
+$eco_nonreg_5 = 0;
+$qua_reg_5 = 0;
+$eco_reg_5 = 0;
+$total_5 = 0;
+}
+
+
+$sqlf="UPDATE `revenue_transaction_final` SET `rev_qua_nonreg`=:qua_nonreg, `rev_eco_nonreg`=:eco_nonreg, `rev_qua_reg`=:qua_reg, `rev_eco_reg`=:eco_reg,`rev_total`=:total WHERE user_id=:user_id AND month=:month AND year=:year" ;
+
+$params = array(
+    'qua_nonreg' => $qua_nonreg_5, 
+    'eco_nonreg' => $eco_nonreg_5, 
+    'qua_reg' => $qua_reg_5, 
+    'eco_reg' => $eco_reg_5, 
+    'total' => $total_5,
+    'user_id' => $user_id, 
+    'month' => $currentMonth, 
+    'year' => $currentYear
+);
+
+$addSample = $db->setData($db->con, $sqlf, $params);
+
+if ($currentMonth == 12) {
+$currentMonth = 1;
+$currentYear++;
+} else {
+$currentMonth++;
+}
+
+}
+
 header("location:ro_report.php");exit;
 }
 else
@@ -1471,8 +1563,20 @@ echo ($i - ($i/2)) . ".1";} ?></td>
 </div>
 </div> <!-- end of model div -->
 
-<?php $i++;
-endforeach;
+<?php
+if (is_array($revenue_transaction) && isset($revenue_transaction[1])) {
+$total_qua_nonreg_3 = $revenue_transaction[2]['rev_qua_nonreg'] + $qua_nonreg_final;
+$total_eco_nonreg_3 = $revenue_transaction[2]['rev_eco_nonreg'] + $eco_nonreg_final;
+$total_qua_reg_3 = $revenue_transaction[2]['rev_qua_reg'] + $qua_reg_final;
+$total_eco_reg_3 = $revenue_transaction[2]['rev_eco_reg'] + $eco_reg_final;
+$total_total_3 = $total_qua_nonreg_3 + $total_eco_nonreg_3 + $total_qua_reg_3 + $total_eco_reg_3;
+} else {
+$total_qua_nonreg_3 = 0;
+$total_eco_nonreg_3 = 0;
+$total_qua_reg_3 = 0;
+$total_eco_reg_3 = 0;
+$total_total_3 = 0;
+}
 
 $qua_nonreg_5 = $total_qua_nonreg_3 - $revenue_transaction[6]['rev_qua_nonreg'];
 $eco_nonreg_5 = $total_eco_nonreg_3 - $revenue_transaction[6]['rev_eco_nonreg'];
@@ -1489,11 +1593,14 @@ $params = array(
     'eco_reg' => $eco_reg_5, 
     'total' => $total_5,
     'user_id' => $user_id, 
-    'month' => $currentMonth, 
-    'year' => $currentYear
+    'month' => $month, 
+    'year' => $year
 );
 
 $addSample = $db->setData($db->con, $sqlf, $params);
+
+ $i++;
+endforeach;
 
 
 ?>
@@ -1506,6 +1613,7 @@ $addSample = $db->setData($db->con, $sqlf, $params);
     <td><?= $qua_reg_6 - $qua_reg_8; ?></td>
     <td><?= $eco_reg_6 - $eco_reg_8; ?></td>
     <td><?= $total_6 - $total_8; ?></td>
+    <td></td>
 </tr> 
 
 
