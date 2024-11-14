@@ -14,6 +14,17 @@ $_SESSION['year']=$_POST['year'];
 $month= $_SESSION['month'];
 $year = $_SESSION['year'];
 
+
+
+}else{
+$_SESSION['month'] = date("m"); 
+$_SESSION['year'] = date("Y");
+
+$month = $_SESSION['month'];
+$year = $_SESSION['year'];
+}
+
+
 if($month =='01'|| $month =='1'){
 $prevmonth = '12';
 $prevYear = $year - 1;
@@ -29,12 +40,9 @@ $prev_sample_received = $db->getCurrentSampleTransaction($db, $db->con, $user_id
 $prev_revenue_received = $db->getCurrentRevenueTransaction($db, $db->con, $user_id, $prevmonth, $year);
 }
 
-
 $sample_received = $db->getCurrentSampleTransaction($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year']); 
 
 $revenue_received = $db->getCurrentRevenueTransaction($db, $db->con, $user_id,  $_SESSION['month'], $_SESSION['year']);
-
-}
 
  ?>
 <!-- ============================================================== -->
@@ -222,7 +230,7 @@ foreach ($getroname as $key){ ?>
 
 			<!-- Start Monthly Sales -->
 			<div class="row">
-				<div class="col-md-6 col-xl-7">
+				<div class="col-md-6 col-xl-8">
 					<div class="card">
 						
 						<div class="card-header">
@@ -230,28 +238,28 @@ foreach ($getroname as $key){ ?>
 								<div class="border border-dark rounded-2 me-2 widget-icons-sections">
 									<i data-feather="bar-chart" class="widgets-icons"></i>
 								</div>
-								<h5 class="card-title mb-0">Monthly Sales</h5>
+								<h5 class="card-title mb-0">Monthly Sample Received</h5>
 							</div>
 						</div>
 
 						<div class="card-body">
-							<div id="monthly-sales" class="apex-charts"></div>
+							<div id="monthly-sales1" class="apex-charts"></div>
 						</div>
 						
 					</div>
 				</div>
 
-				<div class="col-md-6 col-xl-5">
+				<div class="col-md-6 col-xl-4">
 					
 
-					<div class="card overflow-hidden">
+					<div class="card" style="height:410px;overflow-y: scroll;">
 						
 						<div class="card-header">
 							<div class="d-flex align-items-center">
 								<div class="border border-dark rounded-2 me-2 widget-icons-sections">
 									<i data-feather="table" class="widgets-icons"></i>
 								</div>
-								<h5 class="card-title mb-0">Most Visited Pages</h5>
+								<h5 class="card-title mb-0">Sample Tested</h5>
 							</div>
 						</div>
 
@@ -262,118 +270,23 @@ foreach ($getroname as $key){ ?>
 
 										<thead>
 											<tr>
-												<th>Page name</th>
-												<th>Visitors</th>
-												<th>Unique</th>
-												<th colspan="2">Bounce rate</th>
+												<th>Month</th>
+												<th>Sample Tested</th>
+												
 											</tr>
 										</thead>
 
-										<tr>
-											<td>
-												/home
-												<a href="#" class="ms-1" aria-label="Open website">
-													<i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
-												</a>
-											</td>
-											<td>5,896</td>
-											<td>3,654</td>
-											<td>82.54%</td>
-											<td class="w-25">
-												<div id="sparkline-bounce-1" class="apex-charts"></div>
-											</td>
-										</tr>
+									<tbody>
+										<?php 
 
-										<tr>
-											<td>
-												/about.html
-												<a href="#" class="ms-1" aria-label="Open website">
-													<i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
-												</a>
-											</td>
-											<td>3,898</td>
-											<td>3,450</td>
-											<td>76.29%</td>
-											<td class="w-25">
-												<div id="sparkline-bounce-2" class="apex-charts"></div>
-											</td>
-										</tr>
+										$sample_tested = $db->getCurrentSampleTransaction($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year']); 
 
+										
+										 ?>
 										<tr>
-											<td>
-												/index.html 
-												<a href="#" class="ms-1" aria-label="Open website">
-													<i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
-												</a>
-											</td>
-											<td>3,057</td>
-											<td>2,589</td>
-											<td>72.68%</td>
-											<td class="w-25">
-												<div id="sparkline-bounce-3" class="apex-charts"></div>
-											</td>
+											<td><?php echo $sample_tested[3]['month'] ?>&nbsp;-&nbsp;<?php echo $sample_tested[3]['year'] ?></td>
+											<td><?php echo $sample_tested[3]['total'] ?></td>
 										</tr>
-
-										<tr>
-											<td>
-												/invoice.html
-												<a href="#" class="ms-1" aria-label="Open website">
-													<i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
-												</a>
-											</td>
-											<td>867</td>
-											<td>795</td>
-											<td>44.78%</td>
-											<td class="w-25">
-												<div id="sparkline-bounce-4" class="apex-charts"></div>
-											</td>
-										</tr>
-
-										<tr>
-											<td>
-												/docs/
-												<a href="#" class="ms-1" aria-label="Open website">
-													<i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
-												</a>
-											</td>
-											<td>958</td>
-											<td>801</td>
-											<td>41.15%</td>
-											<td class="w-25">
-												<div id="sparkline-bounce-5" class="apex-charts"></div>
-											</td>
-										</tr>
-
-										<tr>
-											<td>
-												/service.html
-												<a href="#" class="ms-1" aria-label="Open website">
-													<i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
-												</a>
-											</td>
-											<td>658</td>
-											<td>589</td>
-											<td>32.65%</td>
-											<td class="w-25">
-												<div id="sparkline-bounce-6" class="apex-charts"></div>
-											</td>
-										</tr>
-
-										<tr>
-											<td>
-												/analytical.html
-												<a href="#" class="ms-1" aria-label="Open website">
-													<i data-feather="link" class="ms-1 text-primary" style="height: 15px; width: 15px;"></i>
-												</a>
-											</td>
-											<td>457</td>
-											<td>859</td>
-											<td>32.65%</td>
-											<td class="w-25">
-												<div id="sparkline-bounce-7" class="apex-charts"></div>
-											</td>
-										</tr>
-
 									</tbody>
 								</table>
 							</div>
@@ -384,6 +297,74 @@ foreach ($getroname as $key){ ?>
 			</div>
 			<!-- End Monthly Sales -->
 
+			<!-- Start Monthly Sales -->
+			<div class="row">
+				<div class="col-md-6 col-xl-8">
+					<div class="card">
+						
+						<div class="card-header">
+							<div class="d-flex align-items-center">
+								<div class="border border-dark rounded-2 me-2 widget-icons-sections">
+									<i data-feather="bar-chart" class="widgets-icons"></i>
+								</div>
+								<h5 class="card-title mb-0">Monthly Revenue Received</h5>
+							</div>
+						</div>
+
+						<div class="card-body">
+							<div id="monthly-sales2" class="apex-charts"></div>
+						</div>
+						
+					</div>
+				</div>
+
+				<div class="col-md-6 col-xl-4">
+					
+
+					<div class="card" style="height:410px;overflow-y: scroll;">
+						
+						<div class="card-header">
+							<div class="d-flex align-items-center">
+								<div class="border border-dark rounded-2 me-2 widget-icons-sections">
+									<i data-feather="table" class="widgets-icons"></i>
+								</div>
+								<h5 class="card-title mb-0">Revenue Tested</h5>
+							</div>
+						</div>
+
+						<div class="card-body p-0">
+							<div class="table-responsive">
+								<table class="table table-traffic mb-0">
+									<tbody>
+
+										<thead>
+											<tr>
+												<th>Month</th>
+												<th>Revenue Tested</th>
+												
+											</tr>
+										</thead>
+
+									<tbody>
+										<?php 
+
+										$revenue_tested = $db->getCurrentRevenueTransaction($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year']); 
+
+										
+										 ?>
+										<tr>
+											<td><?php echo $revenue_tested[6]['month'] ?>&nbsp;-&nbsp;<?php echo $revenue_tested[6]['year'] ?></td>
+											<td><?php echo $revenue_tested[6]['rev_total'] ?></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+			<!-- End Monthly Sales -->
 			<div class="row">
 				<div class="col-md-6 col-xl-6">
 					<div class="card">
@@ -581,6 +562,7 @@ for ($i = 0; $i < 12; $i++) {
         colors: ["#537AEF"],
     };
 
+
     var chart = new ApexCharts(document.querySelector("#website-visitors1"), options);
     chart.render();
 
@@ -639,5 +621,169 @@ var options = {
 };
 var chart = new ApexCharts(document.querySelector("#conversion-visitors1"), options);
 chart.render();
+
+
+
+// Monthly Sales
+var options = {
+    chart: {
+        type: "bar",
+        height: 307,
+        parentHeightOffset: 0,
+        toolbar: {
+            show: false
+        },
+    },
+    colors: ["#537AEF"],
+    series: [{
+        name: 'Amount',
+        data: <?php echo json_encode($data); ?>
+    }],
+    fill: {
+        opacity: 1,
+    },
+    plotOptions: {
+        bar: {
+            columnWidth: "50%",
+            borderRadius: 4,
+            borderRadiusApplication: 'end',
+            borderRadiusWhenStacked: 'last',
+            dataLabels: {
+                position: 'top',
+                orientation: 'vertical',
+            }
+        },
+    },
+    grid: {
+        strokeDashArray: 4,
+        padding: {
+            top: -20,
+            right: 0,
+            bottom: -4
+        },
+        xaxis: {
+            lines: {
+                show: true
+            }
+        }
+    },
+    xaxis: {
+        type: 'datetime',
+        categories: <?php echo json_encode($months); ?>,
+        axisTicks: {
+            color: "#f0f4f7",
+        },
+    },
+    yaxis: {
+        title: {
+            text: 'Number of Sample Received',
+            style: {
+                fontSize: '12px',
+                fontWeight: 600,
+            }
+        },
+    },
+    tooltip: {
+        theme: 'light'
+    },
+    legend: {
+        position: 'top',
+        show: true,
+        horizontalAlign: 'center',
+    },
+    stroke: {
+        width: 0
+    },
+    dataLabels: {
+        enabled: false,
+    },
+    theme: {
+        mode: 'light'
+    },
+};
+var chartOne = new ApexCharts(document.querySelector('#monthly-sales1'), options);
+chartOne.render();
+
+
+// Monthly Sales
+var options = {
+    chart: {
+        type: "bar",
+        height: 307,
+        parentHeightOffset: 0,
+        toolbar: {
+            show: false
+        },
+    },
+    colors: ["#537AEF"],
+    series: [{
+        name: 'Amount',
+        data: <?php echo json_encode($rev_data); ?>
+    }],
+    fill: {
+        opacity: 1,
+    },
+    plotOptions: {
+        bar: {
+            columnWidth: "50%",
+            borderRadius: 4,
+            borderRadiusApplication: 'end',
+            borderRadiusWhenStacked: 'last',
+            dataLabels: {
+                position: 'top',
+                orientation: 'vertical',
+            }
+        },
+    },
+    grid: {
+        strokeDashArray: 4,
+        padding: {
+            top: -20,
+            right: 0,
+            bottom: -4
+        },
+        xaxis: {
+            lines: {
+                show: true
+            }
+        }
+    },
+    xaxis: {
+        type: 'datetime',
+        categories: <?php echo json_encode($months); ?>,
+        axisTicks: {
+            color: "#f0f4f7",
+        },
+    },
+    yaxis: {
+        title: {
+            text: 'Number of Revenue Received',
+            style: {
+                fontSize: '12px',
+                fontWeight: 600,
+            }
+        },
+    },
+    tooltip: {
+        theme: 'light'
+    },
+    legend: {
+        position: 'top',
+        show: true,
+        horizontalAlign: 'center',
+    },
+    stroke: {
+        width: 0
+    },
+    dataLabels: {
+        enabled: false,
+    },
+    theme: {
+        mode: 'light'
+    },
+};
+var chartOne = new ApexCharts(document.querySelector('#monthly-sales2'), options);
+chartOne.render();
+
 
 </script>
