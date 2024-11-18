@@ -5,7 +5,7 @@ $user_choose='m';
 
 
 $sampleTransaction=$db->getCurrentSampleTransaction($db, $db->con, $user_id, $month, $year);
-$revenueTransaction=$db->getCurrentRevenueTransaction1($db, $db->con, $user_id, $month, $year);
+$revenue_transaction=$db->getCurrentRevenueTransaction1($db, $db->con, $user_id, $month, $year);
 $trainingTransaction=$db->getCurrentTrainingList($db, $db->con, $user_id, $month, $year);
 $activityTransaction=$db->getCurrentActivityTransactionList($db, $db->con, $user_id, $month, $year);
 $meetTransaction=$db->getCurrentMeetTransactionList($db, $db->con, $user_id, $month, $year);
@@ -352,7 +352,7 @@ $addSample = $db->setData($db->con, $sqlf, array('qua_nonreg'=>$qua_nonreg_5, 'e
 
 <div class="table-responsive">
 <h6 class="mb-2 line-head" id="typography" >B.  Details of Revenue (Rs.) received and pending</h6>
-<?php if ($revenueTransaction) { ?>
+<?php if ($revenue_transaction) { ?>
 
 <table class="table table-traffic table-bordered " >
 <thead>
@@ -373,44 +373,224 @@ $addSample = $db->setData($db->con, $sqlf, array('qua_nonreg'=>$qua_nonreg_5, 'e
 
 </thead>
 <tbody>
-<?php $i=1; foreach ($revenueTransaction as $regkey): ?>
-<tr>
-<td><?=$i?></td>
+<?php $i=1; if($_SESSION['month']=='01'|| $_SESSION['month']=='1'){
+$prevmonth = '12';
+$year = $_SESSION['year'] - 1;
+}else{
+$prevmonth = $_SESSION['month'] - 1;
+}
+$finalprev = $db->getCurrentRevenueTransactionfinal($db, $db->con, $user_id, $prevmonth, $year);
+
+  // print_r($finalprev);die();
+
+foreach ($revenue_transaction as $rt):
+
+$qua_nonreg_final = isset($finalprev[0]['rev_qua_nonreg']) ? $finalprev[0]['rev_qua_nonreg'] : 0;
+$eco_nonreg_final = isset($finalprev[0]['rev_eco_nonreg']) ? $finalprev[0]['rev_eco_nonreg'] : 0;
+$qua_reg_final = isset($finalprev[0]['rev_qua_reg']) ? $finalprev[0]['rev_qua_reg'] : 0;
+$eco_reg_final = isset($finalprev[0]['rev_eco_reg']) ? $finalprev[0]['rev_eco_reg'] : 0;
+$total_final = isset($finalprev[0]['rev_total']) ? $finalprev[0]['rev_total'] : 0;
+
+
+$prevquo_gst = $qua_nonreg_final * 0.18;
+$preveco_nonreg_gst = $eco_nonreg_final * 0.18;
+$prevqua_reg_gst = $qua_reg_final * 0.18;
+$preveco_reg_gst = $eco_reg_final * 0.18;
+$total_gst = $total_final * 0.18;
+
+$qua_nonreg_4 = $revenue_transaction[2]['rev_qua_nonreg'] * 0.18;
+$eco_nonreg_4 = $revenue_transaction[2]['rev_eco_nonreg'] * 0.18;
+$qua_reg_4 = $revenue_transaction[2]['rev_qua_reg'] * 0.18;
+$eco_reg_4 = $revenue_transaction[2]['rev_eco_reg'] * 0.18;
+$total_4 = $revenue_transaction[2]['rev_total'] * 0.18;
+
+$qua_nonreg_5 = $qua_nonreg_final + $revenue_transaction[2]['rev_qua_nonreg'];
+$eco_nonreg_5 = $eco_nonreg_final + $revenue_transaction[2]['rev_eco_nonreg'];
+$qua_reg_5 = $qua_reg_final + $revenue_transaction[2]['rev_qua_reg'];
+$eco_reg_5 = $eco_reg_final + $revenue_transaction[2]['rev_eco_reg'];
+$total_5 = $total_final + $revenue_transaction[2]['rev_total'];
+
+$qua_nonreg_6 = $prevquo_gst + $qua_nonreg_4;
+$eco_nonreg_6 = $preveco_nonreg_gst + $eco_nonreg_4;
+$qua_reg_6 = $prevqua_reg_gst + $qua_reg_4;
+$eco_reg_6 = $preveco_reg_gst + $eco_reg_4;
+$total_6 = $total_gst + $total_4;
+
+$qua_nonreg_8 = $revenue_transaction[6]['rev_qua_nonreg'] * 0.18;
+$eco_nonreg_8 = $revenue_transaction[6]['rev_eco_nonreg'] * 0.18;
+$qua_reg_8 = $revenue_transaction[6]['rev_qua_reg'] * 0.18;
+$eco_reg_8 = $revenue_transaction[6]['rev_eco_reg'] * 0.18;
+$total_8 = $revenue_transaction[6]['rev_total'] * 0.18;
+
+ ?>
+ <tr>
+<td><?php 
+if($i % 2 != 0 && $i!='1'){ 
+echo (int)($i+1 - ($i / 2));
+}elseif($i=='1'){
+echo $i;
+}elseif($i % 2 == 0 && $i=='2'){
+echo $i-1 . ".1";
+}
+else{ 
+echo ($i - ($i/2)) . ".1";} ?></td>
 <td>
-<?=$regkey['revenue_label_name']?>
+    <?php if ($i == 9) { ?>
+        Pending amount to be received at the end of current month (3-4)
+    <?php } else { ?>
+<?= htmlspecialchars($rt['revenue_label_name']) ?>
+<?php } ?>
 </td>
-<td style="text-align: right;">
-<?=$regkey['rev_qua_nonreg']?>
+<td>
+ <?php if ($i == 1) { ?>
+<?= $qua_nonreg_final ?>
+<?php } elseif ($i == 2) { ?>
+<?= $prevquo_gst ?>
+<?php } elseif ($i == 4) { ?>
+<?= $qua_nonreg_4; ?>
+<?php } elseif ($i == 5) { ?>
+<?= $qua_nonreg_5.'.00'; ?>
+<?php } elseif ($i == 6) { ?>
+<?= $qua_nonreg_6; ?>
+<?php } elseif ($i == 8) { ?>
+<?= $qua_nonreg_8; ?>
+<?php } elseif ($i == 9) { ?>
+<?= $qua_nonreg_5 - $revenue_transaction[6]['rev_qua_nonreg'].'.00'; ?>
+<?php } else { ?>
+<?= htmlspecialchars($rt['rev_qua_nonreg']) ?>
+<?php } ?>
 </td>
-<td style="text-align: right;">
-<?=$regkey['rev_eco_nonreg']?>
+<td>
+ <?php if ($i == 1) { ?>
+<?= $eco_nonreg_final ?>
+<?php } elseif ($i == 2) { ?>
+<?= $preveco_nonreg_gst ?>
+<?php } elseif ($i == 4) { ?>
+<?= $eco_nonreg_4; ?>
+<?php } elseif ($i == 5) { ?>
+<?= $eco_nonreg_5.'.00'; ?>
+<?php } elseif ($i == 6) { ?>
+<?= $eco_nonreg_6; ?>
+<?php } elseif ($i == 8) { ?>
+<?= $eco_nonreg_8; ?>
+<?php } elseif ($i == 9) { ?>
+<?= $eco_nonreg_5 - $revenue_transaction[6]['rev_eco_nonreg'].'.00'; ?>
+<?php } else { ?>
+<?= htmlspecialchars($rt['rev_eco_nonreg']) ?>
+<?php } ?>
+
 </td>
-<td style="text-align: right;">
-<?=$regkey['rev_qua_reg']?>
+<td>
+ <?php if ($i == 1) { ?>
+<?= $qua_reg_final ?>
+<?php } elseif ($i == 2) { ?>
+<?= $prevqua_reg_gst ?>
+<?php } elseif ($i == 4) { ?>
+<?= $qua_reg_4; ?>
+<?php } elseif ($i == 5) { ?>
+<?= $qua_reg_5.'.00'; ?>
+<?php } elseif ($i == 6) { ?>
+<?= $qua_reg_6; ?>
+<?php } elseif ($i == 8) { ?>
+<?= $qua_reg_8; ?>
+<?php } elseif ($i == 9) { ?>
+<?= $qua_reg_5 - $revenue_transaction[6]['rev_qua_reg'].'.00'; ?>
+<?php } else { ?>
+<?= htmlspecialchars($rt['rev_qua_reg']) ?>
+<?php } ?>
 </td>
-<td style="text-align: right;">
-<?=$regkey['rev_eco_reg']?>
+<td>
+ <?php if ($i == 1) { ?>
+<?= $eco_reg_final ?>
+<?php } elseif ($i == 2) { ?>
+<?= $preveco_reg_gst ?>
+<?php } elseif ($i == 4) { ?>
+<?= $eco_reg_4; ?>
+<?php } elseif ($i == 5) { ?>
+<?= $eco_reg_5.'.00'; ?>
+<?php } elseif ($i == 6) { ?>
+<?= $eco_reg_6; ?>
+<?php } elseif ($i == 8) { ?>
+<?= $eco_reg_8; ?>
+<?php } elseif ($i == 9) { ?>
+<?= $eco_reg_5 - $revenue_transaction[6]['rev_eco_reg'].'.00'; ?>
+<?php } else { ?>
+<?= htmlspecialchars($rt['rev_eco_reg']) ?>
+<?php } ?>
 </td>
-<td style="text-align: right;">
-<?=$regkey['rev_total']?>
-</td> 
+<td>
+     <?php if ($i == 1) { ?>
+<?= $total_final ?>
+<?php } elseif ($i == 2) { ?>
+<?= $total_gst ?>
+<?php } elseif ($i == 4) { ?>
+<?= $total_4; ?>
+<?php } elseif ($i == 5) { ?>
+<?= $total_5.'.00'; ?>
+<?php } elseif ($i == 6) { ?>
+<?= $total_6; ?>
+<?php } elseif ($i == 8) { ?>
+<?= $total_8; ?>
+<?php } elseif ($i == 9) { ?>
+<?= $total_5 - $revenue_transaction[6]['rev_total'].'.00'; ?>
+<?php } else { ?>
+<?= htmlspecialchars($rt['rev_total']) ?>
+<?php } ?>
+</td>
+
 
 </tr>
+<?php
+if (is_array($revenue_transaction) && isset($revenue_transaction[1])) {
+$total_qua_nonreg_3 = $revenue_transaction[2]['rev_qua_nonreg'] + $qua_nonreg_final;
+$total_eco_nonreg_3 = $revenue_transaction[2]['rev_eco_nonreg'] + $eco_nonreg_final;
+$total_qua_reg_3 = $revenue_transaction[2]['rev_qua_reg'] + $qua_reg_final;
+$total_eco_reg_3 = $revenue_transaction[2]['rev_eco_reg'] + $eco_reg_final;
+$total_total_3 = $total_qua_nonreg_3 + $total_eco_nonreg_3 + $total_qua_reg_3 + $total_eco_reg_3;
+} else {
+$total_qua_nonreg_3 = 0;
+$total_eco_nonreg_3 = 0;
+$total_qua_reg_3 = 0;
+$total_eco_reg_3 = 0;
+$total_total_3 = 0;
+}
 
-<?php $i++; endforeach; ?>
+$qua_nonreg_5 = $total_qua_nonreg_3 - $revenue_transaction[6]['rev_qua_nonreg'];
+$eco_nonreg_5 = $total_eco_nonreg_3 - $revenue_transaction[6]['rev_eco_nonreg'];
+$qua_reg_5 = $total_qua_reg_3 - $revenue_transaction[6]['rev_qua_reg'];
+$eco_reg_5 = $total_eco_reg_3 - $revenue_transaction[6]['rev_eco_reg'];
+$total_5 = $total_total_3 - $revenue_transaction[6]['rev_total'];
 
-<tr style="font-weight:bold; font-size: 16px;">
-<td colspan="3" style="text-align: right">
-<span style="font-size: 14px;" class=" ">C (7): </span> <?=$revenueCount?>, 
-<span style="font-size: 14px;" class=" ">NC(11+12+13+14): </span> <?=$revenueNotionalCount?> 
-</td>
-<td  style="text-align: right">
-Total (7+11+12+13+14)
-</td>
-<td >
-<?=($revenueCount+$revenueNotionalCount)?>
-</td>
-<td colspan="2"></td>
+$sqlf="UPDATE `revenue_transaction_final` SET `rev_qua_nonreg`=:qua_nonreg, `rev_eco_nonreg`=:eco_nonreg, `rev_qua_reg`=:qua_reg, `rev_eco_reg`=:eco_reg,`rev_total`=:total WHERE user_id=:user_id AND month=:month AND year=:year" ;
+
+$params = array(
+    'qua_nonreg' => $qua_nonreg_5, 
+    'eco_nonreg' => $eco_nonreg_5, 
+    'qua_reg' => $qua_reg_5, 
+    'eco_reg' => $eco_reg_5, 
+    'total' => $total_5,
+    'user_id' => $user_id, 
+    'month' => $month, 
+    'year' => $year
+);
+
+$addSample = $db->setData($db->con, $sqlf, $params);
+
+ $i++;
+endforeach;
+
+
+?>
+
+<tr>
+    <td>5.1</td>
+    <td>Service tax on (5) (3.1-4.1)</td>
+    <td><?= $qua_nonreg_6 - $qua_nonreg_8 ?></td>
+    <td><?= $eco_nonreg_6 - $eco_nonreg_8; ?></td>
+    <td><?= $qua_reg_6 - $qua_reg_8; ?></td>
+    <td><?= $eco_reg_6 - $eco_reg_8; ?></td>
+    <td><?= $total_6 - $total_8; ?></td>
+  
 </tr> 
 
 </tbody>
@@ -702,7 +882,7 @@ Total
 <tr>
 <td colspan="2" style="text-align: right">Total</td>
 <td style="text-align: right; font-weight: bold"><?= $expenditureCount ?></td>
-
+<td></td>
 </tr>
 </tbody>
 
@@ -777,7 +957,7 @@ Total
 <td>
 <?=$equipmentCount?>
 </td>
-
+<td></td>
 </tr>
 </tbody>
 
@@ -913,7 +1093,9 @@ Total
 <td>
 <?=$marketingCount[0]['sample_receive']?>
 </td>
-
+<td></td>
+<td></td>
+<td></td>
 
 </tr>
 </tbody>
@@ -963,7 +1145,7 @@ Total
 <td>
 <?=$bulkCount[0]['testing_charges']?>
 </td>               
-
+<td></td>
 </tr>
 
 </tbody>
@@ -1013,7 +1195,7 @@ Total
 <td>
 <?=$tatkalCount[0]['tatkal_testing_charges']?>
 </td>               
-
+<td></td>
 </tr>
 
 </tbody>
