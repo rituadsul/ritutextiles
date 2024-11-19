@@ -3522,7 +3522,7 @@ if ($manpowerUtilisation) { ?>
 <td></td>
 <td>Total (A)</td>
 <td>
-<?=$manpowerUtilisation[0]['total_a']?>                         
+<?= $total_a = ($manpowerUtilisation[0]['technical_manpower']*$manpowerUtilisation[0]['working_day'])+$manpowerUtilisation[0]['extra_man_day']+$manpowerUtilisation[0]['addtional_working']?>                         
 </td>
 <td></td>
 
@@ -3567,7 +3567,7 @@ if ($manpowerUtilisation) { ?>
 <td></td>
 <td>Total (B)</td>
 <td>
-<?=$manpowerUtilisation[0]['total_b']?>                         
+<?=$total_b = $manpowerUtilisation[0]['special_work']+$manpowerUtilisation[0]['deputation']+$manpowerUtilisation[0]['leave_day']?>                         
 </td>
 <td></td>
 
@@ -3576,7 +3576,7 @@ if ($manpowerUtilisation) { ?>
 
 <td colspan="2" style="font-weight: bold;">Total  number of man days available for the routine testing (C)=(A-B) </td>
 <td>
-<?=$manpowerUtilisation[0]['total_c']?>                       
+<?=$total_c = $total_a - $total_b?>                       
 </td>
 <td></td>
 
@@ -3595,7 +3595,10 @@ if ($manpowerUtilisation) { ?>
 <td>9</td>
 <td>Average output / manday (S)/(C)</td>
 <td>
-<?=$manpowerUtilisation[0]['average_op']?>                          
+    <?php
+    
+        echo number_format($manpowerUtilisation[0]['total_s']/$total_c ,2);
+    ?>
 </td>
 <td></td>
 
@@ -3615,8 +3618,12 @@ if ($manpowerUtilisation) { ?>
 <td>11</td>
 <td>Average Parameter per mandays (P)/(C)</td>
 <td>
-<?=$manpowerUtilisation[0]['average_pm']?>                         
-</td>
+  <?php
+    
+        echo number_format($manpowerUtilisation[0]['total_p']/$total_c,2);
+    ?>
+        
+    </td>
 <td></td>
 
 </tr>
@@ -3646,21 +3653,21 @@ if ($manpowerUtilisation) { ?>
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Number of Technical QAO/JQAO/Fellow</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="technical_manpower" value="<?=$manpowerUtilisation[0]['technical_manpower']?>">
+<input class="form-control" type="text" name="technical_manpower" value="<?=$manpowerUtilisation[0]['technical_manpower']?>" id="technical_manpower">
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Number of working day</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="working_day" value="<?=$manpowerUtilisation[0]['working_day']?>">
+<input class="form-control" type="text" name="working_day" value="<?=$manpowerUtilisation[0]['working_day']?>" id="working_day">
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Extra man days (on tour from other RO/Other section of TC)</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="extra_man_day" value="<?=$manpowerUtilisation[0]['extra_man_day']?>">
+<input class="form-control" type="text" name="extra_man_day" value="<?=$manpowerUtilisation[0]['extra_man_day']?>" id="extra_man_day">
 </div>
 </div>
 
@@ -3668,77 +3675,84 @@ if ($manpowerUtilisation) { ?>
 <label class="control-label col-md-3">Additional working mandays
 (Due to Saturdays/Sundays/holidays/extra hours)</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="addtional_working" value="<?=$manpowerUtilisation[0]['addtional_working']?>">
+<input class="form-control" type="text" name="addtional_working" value="<?=$manpowerUtilisation[0]['addtional_working']?>" id="addtional_working">
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Total (A)</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="total_a" value="<?=$manpowerUtilisation[0]['total_a']?>">
+<input class="form-control" type="text" name="total_a" value="<?= $total_a = ($manpowerUtilisation[0]['technical_manpower']*$manpowerUtilisation[0]['working_day'])+$manpowerUtilisation[0]['extra_man_day']+$manpowerUtilisation[0]['addtional_working']?>" id="total_a" disabled>
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Special Work</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="special_work" value="<?=$manpowerUtilisation[0]['special_work']?>">
+<input class="form-control" type="text" name="special_work" value="<?=$manpowerUtilisation[0]['special_work']?>" id="special_work">
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Deputation of QAOs/JQAOs to other R.O./ Training /seminar/ workshop etc.</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="deputation" value="<?=$manpowerUtilisation[0]['deputation']?>">
+<input class="form-control" type="text" name="deputation" id="deputation" value="<?=$manpowerUtilisation[0]['deputation']?>">
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">No. of days of leave</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="leave_day" value="<?=$manpowerUtilisation[0]['leave_day']?>">
+<input class="form-control" type="text" name="leave_day" value="<?=$manpowerUtilisation[0]['leave_day']?>" id="leave_day">
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Total (B)</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="total_b" value="<?=$manpowerUtilisation[0]['total_b']?>">
+<input class="form-control" type="text" name="total_b" value="<?=$total_b = $manpowerUtilisation[0]['special_work']+$manpowerUtilisation[0]['deputation']+$manpowerUtilisation[0]['leave_day']?>                         
+" id="total_b" disabled>
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Total  number of man days available for the routine testing (C)=(A-B) </label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="total_c" value="<?=$manpowerUtilisation[0]['total_c']?>">
+<input class="form-control" type="text" name="total_c" value="<?=$total_c = $total_a - $total_b?> " id="total_c_hidden"disabled>
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Total Number of samples reported (S)</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="total_s" value="<?=$manpowerUtilisation[0]['total_s']?>">
+<input class="form-control" type="text" name="total_s" value="<?=$manpowerUtilisation[0]['total_s']?>" id="total_s">
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Average output / manday (S)/(C)</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="average_op" value="<?=$manpowerUtilisation[0]['average_op']?>">
+<input class="form-control" type="text" name="average_op" value=" <?php
+    
+        echo number_format($manpowerUtilisation[0]['total_s']/$total_c ,2);
+    ?>" id="average_op" disabled>
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Total No. of Parameter (P)</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="total_p" value="<?=$manpowerUtilisation[0]['total_p']?>">
+<input class="form-control" type="text" name="total_p" value="<?=$manpowerUtilisation[0]['total_p']?>" id="total_p">
 </div>
 </div>
 
 <div class="form-group row py-1">
 <label class="control-label col-md-3">Average Parameter per mandays (P)/(C)</label>
 <div class="col-md-8">
-<input class="form-control" type="text" name="average_pm" value="<?=$manpowerUtilisation[0]['average_pm']?>">
+<input class="form-control" type="text" name="average_pm" value=" <?php
+    
+        echo number_format($manpowerUtilisation[0]['total_p']/$total_c,2);
+    ?>" id="average_pm" disabled>
 </div>
 </div>
 </div>
@@ -3805,3 +3819,5 @@ document.getElementById("gst_amount12").value = '';
 
 </script>
 <?php require('footer.php'); ?>
+
+ <script src="assets/js/functions/manpower_calculation.js"></script> 

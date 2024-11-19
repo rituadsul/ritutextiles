@@ -1242,7 +1242,7 @@ Total
 <h6 class="mb-2 line-head" id="typography" >Manpower Utilization </h6>
 <?php
 
-if ($manpowerAvailablity) { ?>
+if ($manpowerUtilisation) { ?>
 
 <table class="table table-traffic table-bordered " >
 <thead>
@@ -1299,8 +1299,7 @@ if ($manpowerAvailablity) { ?>
 <td></td>
 <td>Total (A)</td>
 <td>
-<?=$manpowerUtilisation[0]['total_a']?>                         
-</td>
+<?= $total_a = ($manpowerUtilisation[0]['technical_manpower']*$manpowerUtilisation[0]['working_day'])+$manpowerUtilisation[0]['extra_man_day']+$manpowerUtilisation[0]['addtional_working']?>      </td>
 </tr>
 
 <tr>
@@ -1337,14 +1336,14 @@ if ($manpowerAvailablity) { ?>
 <td></td>
 <td>Total (B)</td>
 <td>
-<?=$manpowerUtilisation[0]['total_b']?>                         
+<?=$total_b = $manpowerUtilisation[0]['special_work']+$manpowerUtilisation[0]['deputation']+$manpowerUtilisation[0]['leave_day']?>                         
 </td>
 </tr>
 <tr>
 
 <td colspan="2" style="font-weight: bold;">Total  number of man days available for the routine testing (C)=(A-B) </td>
 <td>
-<?=$manpowerUtilisation[0]['total_c']?>                       
+<?=$total_c = $total_a - $total_b?>                       
 </td>
 </tr>
 
@@ -1360,8 +1359,10 @@ if ($manpowerAvailablity) { ?>
 <td>9</td>
 <td>Average output / manday (S)/(C)</td>
 <td>
-<?=$manpowerUtilisation[0]['average_op']?>                          
-</td>
+    <?php
+    
+        echo number_format($manpowerUtilisation[0]['total_s']/$total_c ,2);
+    ?></td>
 </tr>
 
 <tr>
@@ -1376,7 +1377,11 @@ if ($manpowerAvailablity) { ?>
 <td>11</td>
 <td>Average Parameter per mandays (P)/(C)</td>
 <td>
-<?=$manpowerUtilisation[0]['average_pm']?>                         
+  <?php
+    
+        echo number_format($manpowerUtilisation[0]['total_p']/$total_c,2);
+    ?>
+                              
 </td>
 </tr>
 

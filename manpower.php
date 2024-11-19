@@ -20,7 +20,7 @@ header("location:ro_report.php");
 if (isset($_POST['btnSaveSubmit'])) 
 {
 
-	 print_r($_POST);die();
+	  // print_r($_POST);die();
 $technical_manpower = $_POST['technical_manpower'];
 $working_day = $_POST['working_day'];
 $extra_man_day = $_POST['extra_man_day'];
@@ -320,7 +320,7 @@ unset($_SESSION['error']);
     <td>1</td>
     <td>Number of Technical QAO/JQAO/Fellow</td>
     <td>
-        <input type="number" step="0.01" pattern="[0-9]" min="0" class="form-control" name="technical_manpower" id="technical_manpower" value="<?=$db->getCurrentCount($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year'])?>" readonly style="background-color: #f8f9fa;">
+        <input type="number" step="0.01" pattern="[0-9]" min="0" class="form-control" name="technical_manpower" id="technical_manpower">
     </td>
 </tr>
 <tr>
@@ -348,7 +348,7 @@ unset($_SESSION['error']);
     <td></td>
     <td>Total (A)</td>
     <td>
-        <input type="text" class="form-control" name="total_a" id="total_a" style="background-color: var(--bs-tertiary-bg)" readonly required>
+        <input type="text" class="form-control" name="total_a" id="total_a" style="background-color: var(--bs-tertiary-bg)" disabled required>
     </td>
 </tr>
 <tr>
@@ -379,43 +379,44 @@ unset($_SESSION['error']);
     <td></td>
     <td>Total (B)</td>
     <td>
-        <input type="text" class="form-control" name="total_b" id="total_b" style="background-color: var(--bs-tertiary-bg)" readonly required>
+        <input type="text" class="form-control" name="total_b" id="total_b" style="background-color: var(--bs-tertiary-bg)" disabled required>
     </td>
 </tr>
 <tr>
     <td colspan="2" style="font-weight: bold;">Total number of man days available for the routine testing (C)=(A-B)</td>
     <td>
-        <input type="text" class="form-control" name="total_c" id="total_c_hidden" style="background-color: var(--bs-tertiary-bg)" readonly required>
+        <input type="text" class="form-control" name="total_c" id="total_c_hidden" style="background-color: var(--bs-tertiary-bg)" disabled required>
     </td>
 </tr>
 <tr>
     <td>8</td>
     <td>Total Number of samples reported (S)</td>
     <td>
-        <input type="text" class="form-control" value="<?=$db->getCurrentSampleCount($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year']) ?>" name="total_s" id="total_s" style="background-color: var(--bs-tertiary-bg)" readonly required>
+        <input type="text" class="form-control" name="total_s" id="total_s" required>
     </td>
 </tr>
 <tr>
     <td>9</td>
     <td>Average output / manday (S)/(C)</td>
     <td>
-        <input type="text" class="form-control" name="average_op" id="average_op" style="background-color: var(--bs-tertiary-bg)" readonly required>
+        <input type="text" class="form-control" name="average_op" id="average_op" style="background-color: var(--bs-tertiary-bg)" disabled required>
     </td>
 </tr>
 <tr>
     <td>10</td>
     <td>Total No. of parameters (P)</td>
     <td>
-        <input type="text" class="form-control" value="<?=$db->getCurrentEquipment($db, $db->con, $user_id, $month, $year) ?>" name="total_p" id="total_p" style="background-color: var(--bs-tertiary-bg)" readonly required>
+        <input type="text" class="form-control" name="total_p" id="total_p" required>
     </td>
 </tr>
 <tr>
     <td>11</td>
     <td>Average parameters per mandays (P)/(C)</td>
     <td>
-        <input type="text" class="form-control" name="average_pm" id="average_pm" style="background-color: var(--bs-tertiary-bg)" readonly required>
+        <input type="text" class="form-control" name="average_pm" id="average_pm" style="background-color: var(--bs-tertiary-bg)" disabled required>
     </td>
 </tr>
+
 </tbody>
 
 </table>
@@ -482,7 +483,7 @@ unset($_SESSION['error']);
 <td></td>
 <td>Total (A)</td>
 <td>
-<?=$manpowerUtilisation[0]['total_a']?>                         
+<?= $total_a = ($manpowerUtilisation[0]['technical_manpower']*$manpowerUtilisation[0]['working_day'])+$manpowerUtilisation[0]['extra_man_day']+$manpowerUtilisation[0]['addtional_working']?>                         
 </td>
 </tr>
 
@@ -520,14 +521,14 @@ unset($_SESSION['error']);
 <td></td>
 <td>Total (B)</td>
 <td>
-<?=$manpowerUtilisation[0]['total_b']?>                         
+<?=$total_b = $manpowerUtilisation[0]['special_work']+$manpowerUtilisation[0]['deputation']+$manpowerUtilisation[0]['leave_day']?>                         
 </td>
 </tr>
 <tr>
 
 <td colspan="2" style="font-weight: bold;">Total  number of man days available for the routine testing (C)=(A-B) </td>
 <td>
-<?=$manpowerUtilisation[0]['total_c']?>                       
+<?=$total_c = $total_a - $total_b?>                       
 </td>
 </tr>
 
@@ -543,7 +544,10 @@ unset($_SESSION['error']);
 <td>9</td>
 <td>Average output / manday (S)/(C)</td>
 <td>
-<?=$manpowerUtilisation[0]['average_op']?>                          
+    <?php
+    
+        echo number_format($manpowerUtilisation[0]['total_s']/$total_c ,2);
+    ?>
 </td>
 </tr>
 
@@ -559,8 +563,12 @@ unset($_SESSION['error']);
 <td>11</td>
 <td>Average Parameter per mandays (P)/(C)</td>
 <td>
-<?=$manpowerUtilisation[0]['average_pm']?>                         
-</td>
+  <?php
+    
+        echo number_format($manpowerUtilisation[0]['total_p']/$total_c,2);
+    ?>
+        
+    </td>
 </tr>
 
 </tbody>

@@ -40,17 +40,27 @@ $prev_sample_received = $db->getCurrentSampleTransaction($db, $db->con, $user_id
 
 $prev_revenue_received = $db->getCurrentRevenueTransaction($db, $db->con, $user_id, $prevmonth, $prevYear);
 
+$prev_manpower_received = $db->getCurrentManpowerUtilisation($db, $db->con, $user_id, $prevmonth, $prevYear);
+
 }else{
 $prevmonth = $month - 1;
 
 $prev_sample_received = $db->getCurrentSampleTransaction($db, $db->con, $user_id,  $prevmonth, $year); 
 
 $prev_revenue_received = $db->getCurrentRevenueTransaction($db, $db->con, $user_id, $prevmonth, $year);
+
+$prev_manpower_received = $db->getCurrentManpowerUtilisation($db, $db->con, $user_id, $prevmonth, $year);
+
 }
 
 $sample_received = $db->getCurrentSampleTransaction($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year']); 
 
 $revenue_received = $db->getCurrentRevenueTransaction($db, $db->con, $user_id,  $_SESSION['month'], $_SESSION['year']);
+
+$manpower_received = $db->getCurrentManpowerUtilisation($db, $db->con, $user_id,  $_SESSION['month'], $_SESSION['year']);
+
+
+// print_r($manpower_received);die();
 
  ?>
 <!-- ============================================================== -->
@@ -209,47 +219,106 @@ if (isset($revenue_received[2]['rev_total']) && isset($prev_revenue_received[2][
 							</div>
 						</div>
 
-						<div class="col-md-6 col-xl-3">
-							<div class="card">
-								<div class="card-body">
-									<div class="d-flex align-items-center">
-										<div class="fs-14 mb-1">Manpower Availability</div>
-									</div>
+			<div class="col-md-6 col-xl-3">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="fs-14 mb-1">Average output / manday</div>
+            </div>
 
-									<div class="d-flex align-items-baseline mb-2">
-										<div class="fs-22 mb-0 me-2 fw-semibold text-black">90</div>
-										<div class="me-auto">
-											<span class="text-success d-inline-flex align-items-center">
-												25%
-												<i data-feather="trending-up" class="ms-1" style="height: 22px; width: 22px;"></i>
-											</span>
-										</div>
-									</div>
-									<div id="session-visitors" class="apex-charts"></div>
-								</div>
-							</div>
-						</div>
+            <div class="d-flex align-items-baseline mb-2">
+                <div class="fs-22 mb-0 me-2 fw-semibold text-black"> 
+                    <?php
+                    // Ensure required fields are set using isset() and calculate total_a and total_b
+                    $total_a = (isset($manpower_received[0]['technical_manpower']) ? $manpower_received[0]['technical_manpower'] : 0) * (isset($manpower_received[0]['working_day']) ? $manpower_received[0]['working_day'] : 0)
+                            + (isset($manpower_received[0]['extra_man_day']) ? $manpower_received[0]['extra_man_day'] : 0)
+                            + (isset($manpower_received[0]['addtional_working']) ? $manpower_received[0]['addtional_working'] : 0);
 
-						<div class="col-md-6 col-xl-3">
-							<div class="card">
-								<div class="card-body">
-									<div class="d-flex align-items-center">
-										<div class="fs-14 mb-1">Manpower Utilisation</div>
-									</div>
+                    $total_b = (isset($manpower_received[0]['special_work']) ? $manpower_received[0]['special_work'] : 0)
+                            + (isset($manpower_received[0]['deputation']) ? $manpower_received[0]['deputation'] : 0)
+                            + (isset($manpower_received[0]['leave_day']) ? $manpower_received[0]['leave_day'] : 0);
 
-									<div class="d-flex align-items-baseline mb-2">
-										<div class="fs-22 mb-0 me-2 fw-semibold text-black">2,986</div>
-										<div class="me-auto">
-											<span class="text-success d-inline-flex align-items-center">
-												4%
-												<i data-feather="trending-up" class="ms-1" style="height: 22px; width: 22px;"></i>
-											</span>
-										</div>
-									</div>
-									<div id="active-users" class="apex-charts"></div>
-								</div>
-							</div>
-						</div>
+                    $total_c = $total_a - $total_b;
+
+                    // Ensure total_c is not zero to prevent division by zero
+                    $average_op = ($total_c != 0) ? number_format((isset($manpower_received[0]['total_s']) ? $manpower_received[0]['total_s'] : 0) / $total_c, 2) : 0;
+
+                    echo $average_op;
+                    ?>
+                </div>
+                <div class="me-auto">
+                    <span class="text-success d-inline-flex align-items-center">
+                        <?php 
+                        // Calculation for previous month's average (for comparison)
+                        $prev_total_a = (isset($prev_manpower_received[0]['technical_manpower']) ? $prev_manpower_received[0]['technical_manpower'] : 0) * (isset($prev_manpower_received[0]['working_day']) ? $prev_manpower_received[0]['working_day'] : 0)
+                                    + (isset($prev_manpower_received[0]['extra_man_day']) ? $prev_manpower_received[0]['extra_man_day'] : 0)
+                                    + (isset($prev_manpower_received[0]['addtional_working']) ? $prev_manpower_received[0]['addtional_working'] : 0);
+
+                        $prev_total_b = (isset($prev_manpower_received[0]['special_work']) ? $prev_manpower_received[0]['special_work'] : 0)
+                                    + (isset($prev_manpower_received[0]['deputation']) ? $prev_manpower_received[0]['deputation'] : 0)
+                                    + (isset($prev_manpower_received[0]['leave_day']) ? $prev_manpower_received[0]['leave_day'] : 0);
+
+                        $prev_total_c = $prev_total_a - $prev_total_b;
+
+                        // Ensure prev_total_c is not zero to prevent division by zero
+                        $prev_average_op = ($prev_total_c != 0) ? number_format((isset($prev_manpower_received[0]['total_s']) ? $prev_manpower_received[0]['total_s'] : 0) / $prev_total_c, 2) : 0;
+
+                        $manpower_percent = ($prev_average_op != 0) ? round((($average_op - $prev_average_op) / $prev_average_op) * 100, 0) : 0;
+
+                        echo $manpower_percent . '%';
+                        ?>
+                        
+                        <?php if($manpower_percent > 0) { ?>
+                            <i data-feather="trending-up" class="ms-1" style="height: 22px; width: 22px;"></i>
+                        <?php } else { ?>
+                            <i data-feather="trending-down" class="ms-1" style="height: 22px; width: 22px;"></i>
+                        <?php } ?>
+                    </span>
+                </div>
+            </div>
+            <div id="session-visitors1" class="apex-charts"></div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-6 col-xl-3">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="fs-14 mb-1">Average Parameters per Mandays</div>
+            </div>
+
+            <div class="d-flex align-items-baseline mb-2">
+                <div class="fs-22 mb-0 me-2 fw-semibold text-black">
+                    <?php
+                    // Ensure required fields are set and calculate average_pm
+                    $average_pm = ($total_c != 0) ? number_format((isset($manpower_received[0]['total_p']) ? $manpower_received[0]['total_p'] : 0) / $total_c, 2) : 0;
+                    echo $average_pm;
+                    ?>
+                </div>
+                <div class="me-auto">
+                    <span class="text-success d-inline-flex align-items-center">
+                        <?php
+                        // Previous month's average parameters per mandays comparison
+                        $prev_average_pm = ($prev_total_c != 0) ? number_format((isset($prev_manpower_received[0]['total_p']) ? $prev_manpower_received[0]['total_p'] : 0) / $prev_total_c, 2) : 0;
+
+                        $manpower_percent1 = ($prev_average_pm != 0) ? round((($average_pm - $prev_average_pm) / $prev_average_pm) * 100, 0) : 0;
+                        echo $manpower_percent1 . '%';
+                        ?>
+                        
+                        <?php if($manpower_percent1 > 0) { ?>
+                            <i data-feather="trending-up" class="ms-1" style="height: 22px; width: 22px;"></i>
+                        <?php } else { ?>
+                            <i data-feather="trending-down" class="ms-1" style="height: 22px; width: 22px;"></i>
+                        <?php } ?>
+                    </span>
+                </div>
+            </div>
+            <div id="active-users1" class="apex-charts"></div>
+        </div>
+    </div>
+</div>
+
 					</div>
 				</div> <!-- end sales -->
 			</div> <!-- end row -->
@@ -302,27 +371,43 @@ if (isset($revenue_received[2]['rev_total']) && isset($prev_revenue_received[2][
 											</tr>
 										</thead>
 
-									<tbody>
-										<?php 
-
-										$sample_tested = $db->getCurrentSampleTransaction($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year']); 
-
-										
-										 ?>
-										<tr>
-											<td>
+										<tbody>
     <?php 
-    echo isset($sample_tested[3]['month']) ? $sample_tested[3]['month'] : 'N/A'; 
-    echo '&nbsp;-&nbsp;';
-    echo isset($sample_tested[3]['year']) ? $sample_tested[3]['year'] : 'N/A'; 
-    ?>
-</td>
-<td>
-    <?php echo isset($sample_tested[3]['total']) ? $sample_tested[3]['total'] : '0'; ?>
-</td>
+  
+    $current_month = $_SESSION['month'];
+    $current_year = $_SESSION['year']; 
 
-										</tr>
-									</tbody>
+ 
+    for ($i = 0; $i < 12; $i++) {
+  
+        $month = date("m", strtotime("-$i month", strtotime("$current_year-$current_month-01")));
+        $year = date("Y", strtotime("-$i month", strtotime("$current_year-$current_month-01")));
+
+  
+        $sample_tested = $db->getCurrentSampleTransaction($db, $db->con, $user_id, $month, $year);
+
+        ?>
+        <tr>
+            <td>
+                <?php 
+           
+                echo date("F Y", strtotime("$year-$month-01"));
+                ?>
+            </td>
+            <td>
+                <?php 
+       
+                echo isset($sample_tested[3]['total']) ? $sample_tested[3]['total'] : '0'; 
+                ?>
+            </td>
+        </tr>
+        <?php
+    }
+    ?>
+</tbody>
+
+
+								
 								</table>
 							</div>
 						</div>
@@ -361,27 +446,40 @@ if (isset($revenue_received[2]['rev_total']) && isset($prev_revenue_received[2][
 											</tr>
 										</thead>
 
-									<tbody>
-										<?php 
+									 <?php 
+  
+    $current_month = $_SESSION['month'];
+    $current_year = $_SESSION['year']; 
 
-										$revenue_tested = $db->getCurrentRevenueTransaction($db, $db->con, $user_id, $_SESSION['month'], $_SESSION['year']); 
+ 
+    for ($i = 0; $i < 12; $i++) {
+  
+        $month = date("m", strtotime("-$i month", strtotime("$current_year-$current_month-01")));
+        $year = date("Y", strtotime("-$i month", strtotime("$current_year-$current_month-01")));
 
-										
-										 ?>
-										<tr>
-    <td>
-        <?php 
-        echo isset($revenue_tested[6]['month']) ? $revenue_tested[6]['month'] : 'N/A'; 
-        echo '&nbsp;-&nbsp;';
-        echo isset($revenue_tested[6]['year']) ? $revenue_tested[6]['year'] : 'N/A'; 
+  
+        $revenue_tested = $db->getCurrentRevenueTransaction($db, $db->con, $user_id, $month, $year);
+
         ?>
-    </td>
-    <td>
-        <?php echo isset($revenue_tested[6]['rev_total']) ? $revenue_tested[6]['rev_total'] : '0'; ?>
-    </td>
-</tr>
+        <tr>
+            <td>
+                <?php 
+           
+                echo date("F Y", strtotime("$year-$month-01"));
+                ?>
+            </td>
+            <td>
+                <?php 
+       
+                echo isset($revenue_tested[6]['rev_total']) ? $revenue_tested[6]['rev_total'] : '0'; 
+                ?>
+            </td>
+        </tr>
+        <?php
+    }
+    ?>
+</tbody>
 
-									</tbody>
 								</table>
 							</div>
 						</div>
@@ -430,6 +528,7 @@ for ($i = 0; $i < 12; $i++) {
 
     $sample_received = $db->getCurrentSampleTransaction($db, $db->con, $user_id, $month, $year);
     $revenue_received = $db->getCurrentRevenueTransaction($db, $db->con, $user_id, $month, $year);
+    $manpower_received = $db->getCurrentManpowerUtilisation($db, $db->con, $user_id, $month, $year);
 
     if (!empty($sample_received)) {
         $total = $sample_received[1]['total'];
@@ -443,11 +542,31 @@ for ($i = 0; $i < 12; $i++) {
         $rev_total = 0; 
     }
 
+    if (!empty($manpower_received)) {
+
+	$total_a = ($manpower_received[0]['technical_manpower']*$manpower_received[0]['working_day'])+$manpower_received[0]['extra_man_day']+$manpower_received[0]['addtional_working'];
+
+	$total_b = $manpower_received[0]['special_work']+$manpower_received[0]['deputation']+$manpower_received[0]['leave_day'];
+
+	$total_c = $total_a - $total_b;
+
+	$average_op = number_format($manpower_received[0]['total_s']/$total_c ,2);
+	$average_pm = number_format($manpower_received[0]['total_p']/$total_c ,2);
+
+        $manpower_total = $average_op;
+        $manpower_total1 = $average_pm;
+    } else {
+        $manpower_total = 0; 
+        $manpower_total1 = 0; 
+    }
+
     $month_label = date("Y-m", strtotime("$year-$month-01"));
 
     $months[] = $month_label;
     $data[] = $total;
     $rev_data[] = $rev_total;
+    $manpower_data[] = $manpower_total;
+     $manpower_data1[] = $manpower_total1;
 
 }
 ?>
@@ -706,6 +825,118 @@ var options = {
     },
 };
 var chartOne = new ApexCharts(document.querySelector('#monthly-sales2'), options);
+chartOne.render();
+
+
+// Session Chart
+var options = {
+    chart: {
+        type: "line",
+        height: 45,
+        sparkline: {
+            enabled: true
+        },
+        animations: {
+            enabled: false
+        },
+    },
+    fill: {
+        opacity: 1,
+    },
+    stroke: {
+        width: [2],
+        dashArray: [0, 3],
+        lineCap: "round",
+        curve: "smooth",
+    },
+    series: [{
+        name: "Mandays",
+       data: <?php echo json_encode($manpower_data); ?>
+    }],
+    tooltip: {
+        theme: 'light'
+    },
+    grid: {
+        strokeDashArray: 4,
+    },
+    xaxis: {
+        labels: {
+            padding: 0,
+        },
+        tooltip: {
+            enabled: false
+        },
+        type: 'datetime',
+         categories: <?php echo json_encode($months); ?>
+    },
+    yaxis: {
+        labels: {
+            padding: 4
+        },
+    },
+    colors: ["#537AEF", "#343a40"],
+    legend: {
+        show: false,
+    },
+};
+var chart = new ApexCharts(document.querySelector("#session-visitors1"), options);
+chart.render();
+
+
+// Active Users
+var options = {
+    series: [
+        {
+            name: "Mandays",
+       data: <?php echo json_encode($manpower_data1); ?>
+        },
+    ],
+    chart: {
+        height: 45,
+        type: "bar",
+        sparkline: {
+            enabled: true,
+        },
+        animations: {
+            enabled: false
+        },
+    },
+    colors: ["#537AEF"],
+    plotOptions: {
+        bar: {
+            columnWidth: "35%",
+            borderRadius: 3,
+        },
+    },
+    dataLabels: {
+        enabled: false,
+    },
+    fill: {
+        opacity: 1,
+    },
+    grid: {
+        strokeDashArray: 4,
+    },
+    labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    xaxis: {
+        crosshairs: {
+            width: 1,
+        },
+         categories: <?php echo json_encode($months); ?>
+    },
+    yaxis: {
+        labels: {
+            padding: 4
+        },
+    },
+    tooltip: {
+        theme: 'light'
+    },
+    legend: {
+        show: false,
+    },
+};
+var chartOne = new ApexCharts(document.querySelector('#active-users1'), options);
 chartOne.render();
 
 
